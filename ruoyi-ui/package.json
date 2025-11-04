@@ -21,7 +21,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/BeachLife-In-Death/YiDuan"
+    "url": "https://github.com/Meguriii/YiDuan"
   },
   "dependencies": {
     "@riophae/vue-treeselect": "0.4.0",

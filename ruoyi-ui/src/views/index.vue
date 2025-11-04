@@ -20,7 +20,7 @@
             size="mini"
             icon="el-icon-cloudy"
             plain
-            @click="goTarget('https://github.com/BeachLife-In-Death/YiDuan')"
+            @click="goTarget('https://github.com/Meguriii/YiDuan')"
             >Github项目库</el-button
           >
           <el-button
