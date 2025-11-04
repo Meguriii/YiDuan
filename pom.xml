@@ -8,9 +8,9 @@
     <artifactId>ruoyi</artifactId>
     <version>3.9.0</version>
 
-    <name>ruoyi</name>
-    <url>http://www.ruoyi.vip</url>
-    <description>若依管理系统</description>
+    <name>YiDuan</name>
+    <url>https://vcnfzvrvujwh.feishu.cn/wiki/Hj36wCdGJiB2i2kUIBwcZsbJnmh</url>
+    <description>大学快递驿站后台系统</description>
     
     <properties>
         <ruoyi.version>3.9.0</ruoyi.version>
