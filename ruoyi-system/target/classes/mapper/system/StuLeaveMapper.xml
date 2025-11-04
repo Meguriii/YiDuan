@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StuLeaveMapper">
+    
+    <resultMap type="StuLeave" id="StuLeaveResult">
+        <result property="leaveId"       column="leave_id"           />
+        <result property="leaveStudent"  column="leave_student"      />
+        <result property="leaveName"     column="leave_name"         />
+        <result property="leaveType"     column="leave_type"         />
+        <result property="leaveReason"   column="leave_reason"       />
+        <result property="leaveBegin"    column="leave_begin"        />
+        <result property="leaveEnd"      column="leave_end"          />
+        <result property="leaveResult"   column="leave_result"       />
+        <result property="leaveAuditor"  column="leave_auditor"      />
+        <result property="leaveAuditorName"  column="leave_auditorname"  />
+    </resultMap>
+
+    <sql id="selectStuLeaveVo">
+        select l.leave_id, l.leave_student, l.leave_type, l.leave_reason,
+               l.leave_begin, l.leave_end, l.leave_result, l.leave_auditor,
+               s.student_name as leave_name,u.user_name as leave_auditorname
+        from stu_leave l
+        left join student s on l.leave_student = s.student_id
+        left join sys_user u on l.leave_auditor = u.user_id
+    </sql>
+
+    <select id="selectStuLeaveList" parameterType="StuLeave" resultMap="StuLeaveResult">
+        <include refid="selectStuLeaveVo"/>
+        <where>  
+            <if test="leaveStudent != null "> and leave_student = #{leaveStudent}</if>
+            <if test="leaveType != null  and leaveType != ''"> and leave_type = #{leaveType}</if>
+            <if test="leaveReason != null  and leaveReason != ''"> and leave_reason = #{leaveReason}</if>
+            <if test="leaveBegin != null "> and leave_begin = #{leaveBegin}</if>
+            <if test="leaveEnd != null "> and leave_end = #{leaveEnd}</if>
+            <if test="leaveResult != null  and leaveResult != ''"> and leave_result = #{leaveResult}</if>
+            <if test="leaveAuditor != null "> and leave_auditor = #{leaveAuditor}</if>
+        </where>
+    </select>
+    
+    <select id="selectStuLeaveByLeaveId" parameterType="Long" resultMap="StuLeaveResult">
+        <include refid="selectStuLeaveVo"/>
+        where leave_id = #{leaveId}
+    </select>
+
+    <insert id="insertStuLeave" parameterType="StuLeave" useGeneratedKeys="true" keyProperty="leaveId">
+        insert into stu_leave
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="leaveStudent != null">leave_student,</if>
+            <if test="leaveType != null and leaveType != ''">leave_type,</if>
+            <if test="leaveReason != null">leave_reason,</if>
+            <if test="leaveBegin != null">leave_begin,</if>
+            <if test="leaveEnd != null">leave_end,</if>
+<!--            <if test="leaveResult != null">leave_result,</if>-->
+<!--            <if test="leaveAuditor != null">leave_auditor,</if>-->
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="leaveStudent != null">#{leaveStudent},</if>
+            <if test="leaveType != null and leaveType != ''">#{leaveType},</if>
+            <if test="leaveReason != null">#{leaveReason},</if>
+            <if test="leaveBegin != null">#{leaveBegin},</if>
+            <if test="leaveEnd != null">#{leaveEnd},</if>
+<!--            <if test="leaveResult != null">#{leaveResult},</if>-->
+<!--            <if test="leaveAuditor != null">#{leaveAuditor},</if>-->
+         </trim>
+    </insert>
+
+    <update id="updateStuLeave" parameterType="StuLeave">
+        update stu_leave
+        <trim prefix="SET" suffixOverrides=",">
+<!--            <if test="leaveStudent != null">leave_student = #{leaveStudent},</if>-->
+<!--            <if test="leaveType != null and leaveType != ''">leave_type = #{leaveType},</if>-->
+<!--            <if test="leaveReason != null">leave_reason = #{leaveReason},</if>-->
+<!--            <if test="leaveBegin != null">leave_begin = #{leaveBegin},</if>-->
+<!--            <if test="leaveEnd != null">leave_end = #{leaveEnd},</if>-->
+            <if test="leaveResult != null">leave_result = #{leaveResult},</if>
+            <if test="leaveAuditor != null">leave_auditor = #{leaveAuditor},</if>
+        </trim>
+        where leave_id = #{leaveId}
+    </update>
+
+    <delete id="deleteStuLeaveByLeaveId" parameterType="Long">
+        delete from stu_leave where leave_id = #{leaveId}
+    </delete>
+
+    <delete id="deleteStuLeaveByLeaveIds" parameterType="String">
+        delete from stu_leave where leave_id in 
+        <foreach item="leaveId" collection="array" open="(" separator="," close=")">
+            #{leaveId}
+        </foreach>
+    </delete>
+</mapper>
