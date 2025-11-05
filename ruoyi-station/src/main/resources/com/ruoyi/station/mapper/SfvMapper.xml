@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.station.mapper.SfvMapper">
+
+    <resultMap id="BaseResultMap" type="com.ruoyi.station.domain.Sfv">
+            <id property="postAdminId" column="Post_Admin_ID" />
+            <id property="packId" column="Pack_ID" />
+            <result property="sfvSta" column="SFV_Sta" />
+            <result property="sfvNote" column="SFV_Note" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        Post_Admin_ID,Pack_ID,SFV_Sta,SFV_Note
+    </sql>
+</mapper>
