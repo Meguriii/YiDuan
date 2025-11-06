@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.station.mapper.PostMapper">
+
+    <resultMap id="BaseResultMap" type="com.ruoyi.station.domain.Post">
+            <id property="postId" column="Post_ID" />
+            <result property="postName" column="Post_Name" />
+            <result property="postProv" column="Post_Prov" />
+            <result property="postDist" column="Post_Dist" />
+            <result property="postCity" column="Post_City" />
+            <result property="postAddr" column="Post_Addr" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        Post_ID,Post_Name,Post_Prov,Post_Dist,Post_City,Post_Addr
+    </sql>
+</mapper>
