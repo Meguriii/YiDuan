@@ -91,6 +91,13 @@
             <span>更新日志</span>
           </div>
           <el-collapse accordion>
+            <el-collapse-item title="v0.2.0 - 2025-11-06">
+              <ol>
+                <li>数据库转为阿里云部署</li>
+                <li>新增了持久层实体类</li>
+                <li>加入了奶龙</li>
+              </ol>
+            </el-collapse-item>
             <el-collapse-item title="v0.1.0 - 2025-11-04">
               <ol>
                 <li>总之先上线了</li>
