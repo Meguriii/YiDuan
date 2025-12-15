@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.business.mapper.BizPackVerifyMapper">
+    
+    <resultMap type="BizPackVerify" id="BizPackVerifyResult">
+        <result property="verifyId"    column="verify_id"    />
+        <result property="packId"    column="pack_id"    />
+        <result property="stationId"    column="station_id"    />
+        <result property="adminUserId"    column="admin_user_id"    />
+        <result property="verifyType"    column="verify_type"    />
+        <result property="verifyStatus"    column="verify_status"    />
+        <result property="verifyNote"    column="verify_note"    />
+        <result property="verifiedAt"    column="verified_at"    />
+        <result property="createdAt"    column="created_at"    />
+    </resultMap>
+
+    <sql id="selectBizPackVerifyVo">
+        select verify_id, pack_id, station_id, admin_user_id, verify_type, verify_status, verify_note, verified_at, created_at from biz_pack_verify
+    </sql>
+
+    <select id="selectBizPackVerifyList" parameterType="BizPackVerify" resultMap="BizPackVerifyResult">
+        <include refid="selectBizPackVerifyVo"/>
+        <where>  
+            <if test="packId != null  and packId != ''"> and pack_id = #{packId}</if>
+            <if test="stationId != null  and stationId != ''"> and station_id = #{stationId}</if>
+            <if test="adminUserId != null "> and admin_user_id = #{adminUserId}</if>
+            <if test="verifyType != null  and verifyType != ''"> and verify_type = #{verifyType}</if>
+            <if test="verifyStatus != null  and verifyStatus != ''"> and verify_status = #{verifyStatus}</if>
+            <if test="verifyNote != null  and verifyNote != ''"> and verify_note = #{verifyNote}</if>
+            <if test="verifiedAt != null "> and verified_at = #{verifiedAt}</if>
+            <if test="createdAt != null "> and created_at = #{createdAt}</if>
+        </where>
+    </select>
+    
+    <select id="selectBizPackVerifyByVerifyId" parameterType="String" resultMap="BizPackVerifyResult">
+        <include refid="selectBizPackVerifyVo"/>
+        where verify_id = #{verifyId}
+    </select>
+
+    <insert id="insertBizPackVerify" parameterType="BizPackVerify" useGeneratedKeys="true" keyProperty="verifyId">
+        insert into biz_pack_verify
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="packId != null and packId != ''">pack_id,</if>
+            <if test="stationId != null and stationId != ''">station_id,</if>
+            <if test="adminUserId != null">admin_user_id,</if>
+            <if test="verifyType != null and verifyType != ''">verify_type,</if>
+            <if test="verifyStatus != null and verifyStatus != ''">verify_status,</if>
+            <if test="verifyNote != null">verify_note,</if>
+            <if test="verifiedAt != null">verified_at,</if>
+            <if test="createdAt != null">created_at,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="packId != null and packId != ''">#{packId},</if>
+            <if test="stationId != null and stationId != ''">#{stationId},</if>
+            <if test="adminUserId != null">#{adminUserId},</if>
+            <if test="verifyType != null and verifyType != ''">#{verifyType},</if>
+            <if test="verifyStatus != null and verifyStatus != ''">#{verifyStatus},</if>
+            <if test="verifyNote != null">#{verifyNote},</if>
+            <if test="verifiedAt != null">#{verifiedAt},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizPackVerify" parameterType="BizPackVerify">
+        update biz_pack_verify
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="packId != null and packId != ''">pack_id = #{packId},</if>
+            <if test="stationId != null and stationId != ''">station_id = #{stationId},</if>
+            <if test="adminUserId != null">admin_user_id = #{adminUserId},</if>
+            <if test="verifyType != null and verifyType != ''">verify_type = #{verifyType},</if>
+            <if test="verifyStatus != null and verifyStatus != ''">verify_status = #{verifyStatus},</if>
+            <if test="verifyNote != null">verify_note = #{verifyNote},</if>
+            <if test="verifiedAt != null">verified_at = #{verifiedAt},</if>
+            <if test="createdAt != null">created_at = #{createdAt},</if>
+        </trim>
+        where verify_id = #{verifyId}
+    </update>
+
+    <delete id="deleteBizPackVerifyByVerifyId" parameterType="String">
+        delete from biz_pack_verify where verify_id = #{verifyId}
+    </delete>
+
+    <delete id="deleteBizPackVerifyByVerifyIds" parameterType="String">
+        delete from biz_pack_verify where verify_id in 
+        <foreach item="verifyId" collection="array" open="(" separator="," close=")">
+            #{verifyId}
+        </foreach>
+    </delete>
+</mapper>

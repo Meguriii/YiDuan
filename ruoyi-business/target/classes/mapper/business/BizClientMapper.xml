@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.business.mapper.BizClientMapper">
+    
+    <resultMap type="BizClient" id="BizClientResult">
+        <result property="clientId"    column="client_id"    />
+        <result property="clientName"    column="client_name"    />
+        <result property="clientTel"    column="client_tel"    />
+        <result property="clientStatus"    column="client_status"    />
+        <result property="createdAt"    column="created_at"    />
+        <result property="updatedAt"    column="updated_at"    />
+    </resultMap>
+
+    <sql id="selectBizClientVo">
+        select client_id, client_name, client_tel, client_status, created_at, updated_at from biz_client
+    </sql>
+
+    <select id="selectBizClientList" parameterType="BizClient" resultMap="BizClientResult">
+        <include refid="selectBizClientVo"/>
+        <where>  
+            <if test="clientName != null  and clientName != ''"> and client_name like concat('%', #{clientName}, '%')</if>
+            <if test="clientTel != null  and clientTel != ''"> and client_tel = #{clientTel}</if>
+            <if test="clientStatus != null  and clientStatus != ''"> and client_status = #{clientStatus}</if>
+            <if test="createdAt != null "> and created_at = #{createdAt}</if>
+            <if test="updatedAt != null "> and updated_at = #{updatedAt}</if>
+        </where>
+    </select>
+    
+    <select id="selectBizClientByClientId" parameterType="String" resultMap="BizClientResult">
+        <include refid="selectBizClientVo"/>
+        where client_id = #{clientId}
+    </select>
+
+    <insert id="insertBizClient" parameterType="BizClient" useGeneratedKeys="true" keyProperty="clientId">
+        insert into biz_client
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="clientName != null and clientName != ''">client_name,</if>
+            <if test="clientTel != null and clientTel != ''">client_tel,</if>
+            <if test="clientStatus != null and clientStatus != ''">client_status,</if>
+            <if test="createdAt != null">created_at,</if>
+            <if test="updatedAt != null">updated_at,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="clientName != null and clientName != ''">#{clientName},</if>
+            <if test="clientTel != null and clientTel != ''">#{clientTel},</if>
+            <if test="clientStatus != null and clientStatus != ''">#{clientStatus},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+            <if test="updatedAt != null">#{updatedAt},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizClient" parameterType="BizClient">
+        update biz_client
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="clientName != null and clientName != ''">client_name = #{clientName},</if>
+            <if test="clientTel != null and clientTel != ''">client_tel = #{clientTel},</if>
+            <if test="clientStatus != null and clientStatus != ''">client_status = #{clientStatus},</if>
+            <if test="createdAt != null">created_at = #{createdAt},</if>
+            <if test="updatedAt != null">updated_at = #{updatedAt},</if>
+        </trim>
+        where client_id = #{clientId}
+    </update>
+
+    <delete id="deleteBizClientByClientId" parameterType="String">
+        delete from biz_client where client_id = #{clientId}
+    </delete>
+
+    <delete id="deleteBizClientByClientIds" parameterType="String">
+        delete from biz_client where client_id in 
+        <foreach item="clientId" collection="array" open="(" separator="," close=")">
+            #{clientId}
+        </foreach>
+    </delete>
+</mapper>

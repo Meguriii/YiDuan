@@ -1,0 +1,61 @@
+package com.ruoyi.business.service;
+
+import java.util.List;
+import com.ruoyi.business.domain.BizClient;
+
+/**
+ * 业务用户Service接口
+ * 
+ * @author weiyi
+ * @date 2025-12-09
+ */
+public interface IBizClientService 
+{
+    /**
+     * 查询业务用户
+     * 
+     * @param clientId 业务用户主键
+     * @return 业务用户
+     */
+    public BizClient selectBizClientByClientId(String clientId);
+
+    /**
+     * 查询业务用户列表
+     * 
+     * @param bizClient 业务用户
+     * @return 业务用户集合
+     */
+    public List<BizClient> selectBizClientList(BizClient bizClient);
+
+    /**
+     * 新增业务用户
+     * 
+     * @param bizClient 业务用户
+     * @return 结果
+     */
+    public int insertBizClient(BizClient bizClient);
+
+    /**
+     * 修改业务用户
+     * 
+     * @param bizClient 业务用户
+     * @return 结果
+     */
+    public int updateBizClient(BizClient bizClient);
+
+    /**
+     * 批量删除业务用户
+     * 
+     * @param clientIds 需要删除的业务用户主键集合
+     * @return 结果
+     */
+    public int deleteBizClientByClientIds(String[] clientIds);
+
+    /**
+     * 删除业务用户信息
+     * 
+     * @param clientId 业务用户主键
+     * @return 结果
+     */
+    public int deleteBizClientByClientId(String clientId);
+}
