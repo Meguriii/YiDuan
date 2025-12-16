@@ -200,12 +200,12 @@
     <el-table v-loading="loading" :data="packList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="包裹ID" align="center" prop="packId" />
-      <el-table-column label="寄件用户(biz_client)" align="center" prop="senderId" />
+      <el-table-column label="寄件人ID" align="center" prop="senderId" />
       <el-table-column label="寄件省" align="center" prop="senderProv" />
       <el-table-column label="寄件市" align="center" prop="senderCity" />
       <el-table-column label="寄件区县" align="center" prop="senderDist" />
       <el-table-column label="寄件详细地址" align="center" prop="senderAddrDetail" />
-      <el-table-column label="收件用户ID，可为空" align="center" prop="receiverId" />
+      <el-table-column label="收件人ID" align="center" prop="receiverId" />
       <el-table-column label="收件人姓名" align="center" prop="receiverName" />
       <el-table-column label="收件人手机号" align="center" prop="receiverTel" />
       <el-table-column label="收件省" align="center" prop="receiverProv" />
