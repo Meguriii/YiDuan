@@ -214,7 +214,7 @@
                 <li>完善字典数据配置界面</li>
               </ol>
             </el-collapse-item>
-            <el-collapse-item title="v0.3.4 - 2025-11-18">
+            <el-collapse-item title="v0.3.3 - 2025-11-17">
               <ol>
                 <li>优化界面UI布局</li>
                 <li>修复一些显示bug</li>
