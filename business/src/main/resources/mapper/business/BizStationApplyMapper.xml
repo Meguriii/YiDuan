@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.business.mapper.BizStationApplyMapper">
+    
+    <resultMap type="BizStationApply" id="BizStationApplyResult">
+        <result property="applyId"    column="apply_id"    />
+        <result property="stationName"    column="station_name"    />
+        <result property="stationProv"    column="station_prov"    />
+        <result property="stationCity"    column="station_city"    />
+        <result property="stationDist"    column="station_dist"    />
+        <result property="stationAddr"    column="station_addr"    />
+        <result property="contactUserId"    column="contact_user_id"    />
+        <result property="tel"    column="tel"    />
+        <result property="applyStatus"    column="apply_status"    />
+        <result property="auditBy"    column="audit_by"    />
+        <result property="auditTime"    column="audit_time"    />
+        <result property="auditRemark"    column="audit_remark"    />
+        <result property="createdAt"    column="created_at"    />
+        <result property="updatedAt"    column="updated_at"    />
+    </resultMap>
+
+    <sql id="selectBizStationApplyVo">
+        select apply_id, station_name, station_prov, station_city, station_dist, station_addr, contact_user_id, tel, apply_status, audit_by, audit_time, audit_remark, created_at, updated_at from biz_station_apply
+    </sql>
+
+    <select id="selectBizStationApplyList" parameterType="BizStationApply" resultMap="BizStationApplyResult">
+        <include refid="selectBizStationApplyVo"/>
+        <where>  
+            <if test="stationName != null  and stationName != ''"> and station_name like concat('%', #{stationName}, '%')</if>
+            <if test="applyStatus != null  and applyStatus != ''"> and apply_status = #{applyStatus}</if>
+            <if test="contactUserId != null "> and contact_user_id = #{contactUserId}</if>
+        </where>
+        order by created_at desc
+    </select>
+    
+    <select id="selectBizStationApplyByApplyId" parameterType="Long" resultMap="BizStationApplyResult">
+        <include refid="selectBizStationApplyVo"/>
+        where apply_id = #{applyId}
+    </select>
+
+    <insert id="insertBizStationApply" parameterType="BizStationApply" useGeneratedKeys="true" keyProperty="applyId">
+        insert into biz_station_apply
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="stationName != null and stationName != ''">station_name,</if>
+            <if test="stationProv != null and stationProv != ''">station_prov,</if>
+            <if test="stationCity != null and stationCity != ''">station_city,</if>
+            <if test="stationDist != null and stationDist != ''">station_dist,</if>
+            <if test="stationAddr != null and stationAddr != ''">station_addr,</if>
+            <if test="contactUserId != null">contact_user_id,</if>
+            <if test="tel != null and tel != ''">tel,</if>
+            <if test="applyStatus != null and applyStatus != ''">apply_status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="stationName != null and stationName != ''">#{stationName},</if>
+            <if test="stationProv != null and stationProv != ''">#{stationProv},</if>
+            <if test="stationCity != null and stationCity != ''">#{stationCity},</if>
+            <if test="stationDist != null and stationDist != ''">#{stationDist},</if>
+            <if test="stationAddr != null and stationAddr != ''">#{stationAddr},</if>
+            <if test="contactUserId != null">#{contactUserId},</if>
+            <if test="tel != null and tel != ''">#{tel},</if>
+            <if test="applyStatus != null and applyStatus != ''">#{applyStatus},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizStationApply" parameterType="BizStationApply">
+        update biz_station_apply
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="applyStatus != null and applyStatus != ''">apply_status = #{applyStatus},</if>
+            <if test="auditBy != null">audit_by = #{auditBy},</if>
+            <if test="auditTime != null">audit_time = #{auditTime},</if>
+            <if test="auditRemark != null">audit_remark = #{auditRemark},</if>
+        </trim>
+        where apply_id = #{applyId}
+    </update>
+
+    <delete id="deleteBizStationApplyByApplyId" parameterType="Long">
+        delete from biz_station_apply where apply_id = #{applyId}
+    </delete>
+
+    <delete id="deleteBizStationApplyByApplyIds" parameterType="Long">
+        delete from biz_station_apply where apply_id in 
+        <foreach item="applyId" collection="array" open="(" separator="," close=")">
+            #{applyId}
+        </foreach>
+    </delete>
+</mapper>

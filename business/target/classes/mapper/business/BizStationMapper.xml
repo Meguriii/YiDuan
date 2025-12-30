@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.business.mapper.BizStationMapper">
+    
+    <resultMap type="BizStation" id="BizStationResult">
+        <result property="stationId"    column="station_id"    />
+        <result property="stationName"    column="station_name"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="stationProv"    column="station_prov"    />
+        <result property="stationCity"    column="station_city"    />
+        <result property="stationDist"    column="station_dist"    />
+        <result property="stationAddr"    column="station_addr"    />
+        <result property="contactUserId"    column="contact_user_id"    />
+        <result property="status"    column="status"    />
+        <result property="tel"    column="tel"    />
+        <result property="createdAt"    column="created_at"    />
+        <result property="updatedAt"    column="updated_at"    />
+    </resultMap>
+
+    <sql id="selectBizStationVo">
+        select station_id, station_name, dept_id, station_prov, station_city, station_dist, station_addr, contact_user_id, status, tel, created_at, updated_at from biz_station
+    </sql>
+
+    <select id="selectBizStationList" parameterType="BizStation" resultMap="BizStationResult">
+        <include refid="selectBizStationVo"/>
+        <where>  
+            <if test="stationName != null  and stationName != ''"> and station_name like concat('%', #{stationName}, '%')</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+            <if test="stationProv != null  and stationProv != ''"> and station_prov = #{stationProv}</if>
+            <if test="stationCity != null  and stationCity != ''"> and station_city = #{stationCity}</if>
+            <if test="stationDist != null  and stationDist != ''"> and station_dist = #{stationDist}</if>
+            <if test="stationAddr != null  and stationAddr != ''"> and station_addr = #{stationAddr}</if>
+            <if test="contactUserId != null "> and contact_user_id = #{contactUserId}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="tel != null  and tel != ''"> and tel = #{tel}</if>
+            <if test="createdAt != null "> and created_at = #{createdAt}</if>
+            <if test="updatedAt != null "> and updated_at = #{updatedAt}</if>
+        </where>
+    </select>
+    
+    <select id="selectBizStationByStationId" parameterType="String" resultMap="BizStationResult">
+        <include refid="selectBizStationVo"/>
+        where station_id = #{stationId}
+    </select>
+
+    <insert id="insertBizStation" parameterType="BizStation" useGeneratedKeys="true" keyProperty="stationId">
+        insert into biz_station
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">dept_id,</if>
+            <if test="stationName != null and stationName != ''">station_name,</if>
+            <if test="stationProv != null and stationProv != ''">station_prov,</if>
+            <if test="stationCity != null and stationCity != ''">station_city,</if>
+            <if test="stationDist != null and stationDist != ''">station_dist,</if>
+            <if test="stationAddr != null and stationAddr != ''">station_addr,</if>
+            <if test="contactUserId != null">contact_user_id,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="tel != null and tel != ''">tel,</if>
+            <if test="createdAt != null">created_at,</if>
+            <if test="updatedAt != null">updated_at,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">#{deptId},</if>
+            <if test="stationName != null and stationName != ''">#{stationName},</if>
+            <if test="stationProv != null and stationProv != ''">#{stationProv},</if>
+            <if test="stationCity != null and stationCity != ''">#{stationCity},</if>
+            <if test="stationDist != null and stationDist != ''">#{stationDist},</if>
+            <if test="stationAddr != null and stationAddr != ''">#{stationAddr},</if>
+            <if test="contactUserId != null">#{contactUserId},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="tel != null and tel != ''">#{tel},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+            <if test="updatedAt != null">#{updatedAt},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizStation" parameterType="BizStation">
+        update biz_station
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="stationName != null and stationName != ''">station_name = #{stationName},</if>
+            <if test="stationProv != null and stationProv != ''">station_prov = #{stationProv},</if>
+            <if test="stationCity != null and stationCity != ''">station_city = #{stationCity},</if>
+            <if test="stationDist != null and stationDist != ''">station_dist = #{stationDist},</if>
+            <if test="stationAddr != null and stationAddr != ''">station_addr = #{stationAddr},</if>
+            <if test="contactUserId != null">contact_user_id = #{contactUserId},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="tel != null and tel != ''">tel = #{tel},</if>
+            <if test="createdAt != null">created_at = #{createdAt},</if>
+            <if test="updatedAt != null">updated_at = #{updatedAt},</if>
+        </trim>
+        where station_id = #{stationId}
+    </update>
+
+    <delete id="deleteBizStationByStationId" parameterType="String">
+        delete from biz_station where station_id = #{stationId}
+    </delete>
+
+    <delete id="deleteBizStationByStationIds" parameterType="String">
+        delete from biz_station where station_id in 
+        <foreach item="stationId" collection="array" open="(" separator="," close=")">
+            #{stationId}
+        </foreach>
+    </delete>
+</mapper>
