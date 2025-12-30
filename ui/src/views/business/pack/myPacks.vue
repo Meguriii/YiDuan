@@ -99,7 +99,7 @@
       <el-divider></el-divider>
 
       <div class="pack-detail">
-        <h3>包裹详情</h3>
+        <h2>包裹详情</h2>
         <el-descriptions :column="2" border>
           <el-descriptions-item label="包裹ID">{{ currentPack.packId }}</el-descriptions-item>
           <el-descriptions-item label="包裹状态">

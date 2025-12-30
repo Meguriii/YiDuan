@@ -230,8 +230,21 @@
         <dict-tag :options="dict.type.biz_yes_no" :value="scope.row.isUrgent"/>
       </template>
       </el-table-column>
-      <el-table-column label="包裹状态" align="center" prop="status" />
-      <el-table-column label="取件码" align="center" prop="pickupCode" />
+      <el-table-column label="包裹状态" align="center" prop="status" width="120">
+        <template slot-scope="scope">
+          <el-tag :type="getStatusType(scope.row.status)">
+            {{ scope.row.status }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="取件码" align="center" prop="pickupCode" width="100">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.pickupCode" type="success" effect="dark">
+            {{ scope.row.pickupCode }}
+          </el-tag>
+          <span v-else>-</span>
+        </template>
+      </el-table-column>
 <!--      <el-table-column label="创建时间" align="center" prop="createdAt" width="180">-->
 <!--        <template slot-scope="scope">-->
 <!--          <span>{{ parseTime(scope.row.createdAt, '{y}-{m}-{d}') }}</span>-->
@@ -242,7 +255,7 @@
 <!--          <span>{{ parseTime(scope.row.updatedAt, '{y}-{m}-{d}') }}</span>-->
 <!--        </template>-->
 <!--      </el-table-column>-->
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="300">
         <template slot-scope="scope">
           <el-button
             size="mini"
