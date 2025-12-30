@@ -1,5 +1,4 @@
 package com.ruoyi.business.service.impl;
-
 import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +9,10 @@ import com.ruoyi.business.mapper.BizStationMapper;
 import com.ruoyi.business.domain.BizStationApply;
 import com.ruoyi.business.domain.BizStation;
 import com.ruoyi.business.service.IBizStationApplyService;
+import com.ruoyi.business.service.IBizStationAdminMapService;
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.system.service.ISysDeptService;
+import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.common.utils.SecurityUtils;
 
 /**
@@ -31,6 +32,12 @@ public class BizStationApplyServiceImpl implements IBizStationApplyService
 
     @Autowired
     private ISysDeptService deptService;
+    
+    @Autowired
+    private IBizStationAdminMapService adminMapService;
+    
+    @Autowired
+    private ISysUserService userService;
 
     /**
      * 查询驿站申请
@@ -48,7 +55,7 @@ public class BizStationApplyServiceImpl implements IBizStationApplyService
      * 查询驿站申请列表
      * 
      * @param bizStationApply 驿站申请
-     * @return 驿站申请
+     * @return 驿站申请集合
      */
     @Override
     public List<BizStationApply> selectBizStationApplyList(BizStationApply bizStationApply)
@@ -65,10 +72,10 @@ public class BizStationApplyServiceImpl implements IBizStationApplyService
     @Override
     public int insertBizStationApply(BizStationApply bizStationApply)
     {
-        // 设置申请人为当前登录用户
-        bizStationApply.setContactUserId(SecurityUtils.getUserId());
         // 设置申请状态为待审核
         bizStationApply.setApplyStatus("待审核");
+        // 设置联系人用户ID为当前登录用户ID
+        bizStationApply.setContactUserId(SecurityUtils.getUserId());
         return bizStationApplyMapper.insertBizStationApply(bizStationApply);
     }
 
@@ -142,6 +149,21 @@ public class BizStationApplyServiceImpl implements IBizStationApplyService
             if (stationResult <= 0) {
                 throw new RuntimeException("创建驿站失败");
             }
+            
+            // 4. 将申请人设置为该驿站的管理员
+            // 向驿站-管理员映射表中添加记录
+            com.ruoyi.business.domain.BizStationAdminMap adminMap = new com.ruoyi.business.domain.BizStationAdminMap();
+            adminMap.setStationId(station.getStationId());
+            adminMap.setAdminUserId(apply.getContactUserId());
+            adminMap.setRoleNote("站长"); // 设置角色说明为站长
+            adminMap.setAssignedAt(new Date());
+            
+            // 插入驿站管理员映射关系
+            adminMapService.insertBizStationAdminMap(adminMap);
+            
+            // 5. 更新申请人的系统角色为驿站管理员（ID为101）
+            Long[] roleIds = {101L}; // 驿站管理员角色ID
+            userService.insertUserAuth(apply.getContactUserId(), roleIds);
         }
 
         return 1;

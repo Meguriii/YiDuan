@@ -73,26 +73,27 @@
           </div>
           <div class="update-log-container">
             <el-collapse accordion>
-            <el-collapse-item title="v0.7.5 - 2025-12-30">
+            <el-collapse-item title="v0.9.0 - 2025-12-30">
               <ol>
-                <li>重构设计主页UI</li>
+                <li>重构主页UI</li>
                 <li>优化过长的更新日志</li>
+                <li>优化驿站审批后管理员绑定逻辑</li>
               </ol>
             </el-collapse-item>
-            <el-collapse-item title="v0.7.4 - 2025-12-28">
+            <el-collapse-item title="v0.8.4 - 2025-12-28">
               <ol>
                 <li>实现超级管理员审核驿站功能</li>
                 <li>完善审核操作日志记录</li>
               </ol>
             </el-collapse-item>
-            <el-collapse-item title="v0.7.3 - 2025-12-26">
+            <el-collapse-item title="v0.8.3 - 2025-12-26">
               <ol>
                 <li>实现驿站管理员注册功能</li>
                 <li>新增驿站信息填写和验证流程</li>
                 <li>完成负责人与驿站地址信息管理</li>
               </ol>
             </el-collapse-item>
-            <el-collapse-item title="v0.7.2 - 2025-12-24">
+            <el-collapse-item title="v0.8.2 - 2025-12-24">
               <ol>
                 <li>优化驿站数据库表结构</li>
                 <li>实现驿站管理功能</li>
@@ -100,49 +101,49 @@
                 <li>完善本驿站数据访问权限控制</li>
               </ol>
             </el-collapse-item>
-            <el-collapse-item title="v0.7.1 - 2025-12-22">
+            <el-collapse-item title="v0.8.1 - 2025-12-22">
               <ol>
                 <li>实现发货核验功能</li>
                 <li>添加包裹核验流程（易碎品、危险品检查）</li>
                 <li>实现包裹特殊标签标记和状态更新</li>
               </ol>
             </el-collapse-item>
-            <el-collapse-item title="v0.7.0 - 2025-12-20">
+            <el-collapse-item title="v0.8.0 - 2025-12-20">
               <ol>
                 <li>实现收货核验功能</li>
                 <li>新增包裹破损检查和状态管理</li>
                 <li>完善不合格包裹处理流程</li>
               </ol>
             </el-collapse-item>
-            <el-collapse-item title="v0.6.8 - 2025-12-18">
+            <el-collapse-item title="v0.7.4 - 2025-12-18">
               <ol>
                 <li>实现取件码生成与验证机制</li>
                 <li>新增包裹分类和存储空间检查功能</li>
                 <li>完成包裹上架流程管理</li>
               </ol>
             </el-collapse-item>
-            <el-collapse-item title="v0.6.7 - 2025-12-16">
+            <el-collapse-item title="v0.7.3 - 2025-12-16">
               <ol>
                 <li>重构用户注册和登录功能</li>
                 <li>新增用户个人信息管理模块</li>
                 <li>完善多地址管理功能</li>
               </ol>
             </el-collapse-item>
-            <el-collapse-item title="v0.6.6 - 2025-12-14">
+            <el-collapse-item title="v0.7.2 - 2025-12-14">
               <ol>
                 <li>实现用户寄送快递登记功能</li>
                 <li>新增寄件人、收件地址、货物类型信息录入</li>
                 <li>完成核验通过后自动入库流程</li>
               </ol>
             </el-collapse-item>
-            <el-collapse-item title="v0.6.5 - 2025-12-12">
+            <el-collapse-item title="v0.7.1 - 2025-12-12">
               <ol>
                 <li>实现快递运输环节追踪功能</li>
                 <li>新增包裹状态查询和位置跟踪</li>
                 <li>完善个人相关包裹信息展示</li>
               </ol>
             </el-collapse-item>
-            <el-collapse-item title="v0.6.4 - 2025-12-10">
+            <el-collapse-item title="v0.7.0 - 2025-12-10">
               <ol>
                 <li>实现用户取快递功能</li>
                 <li>新增取件提醒和取件码验证机制</li>
@@ -395,7 +396,7 @@ export default {
       roleGroup: '',
       postGroup: '',
       server: {},
-      version: "0.7.5"
+      version: "0.9.0"
     }
   },
   methods: {

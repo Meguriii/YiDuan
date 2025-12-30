@@ -18,6 +18,7 @@ import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.system.service.ISysRoleService;
 
 /**
  * 注册校验方法
@@ -35,6 +36,10 @@ public class SysRegisterService
 
     @Autowired
     private RedisCache redisCache;
+    
+    // 添加角色服务依赖
+    @Autowired
+    private ISysRoleService roleService;
 
     /**
      * 注册
@@ -86,6 +91,12 @@ public class SysRegisterService
             }
             else
             {
+                // 注册成功后，为用户分配准管理员角色
+                if (sysUser.getUserId() != null)
+                {
+                    Long[] roleIds = {102L};
+                    userService.insertUserAuth(sysUser.getUserId(), roleIds);
+                }
                 AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.REGISTER, MessageUtils.message("user.register.success")));
             }
         }

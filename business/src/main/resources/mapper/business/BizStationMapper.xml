@@ -48,7 +48,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <insert id="insertBizStation" parameterType="BizStation" useGeneratedKeys="true" keyProperty="stationId">
         insert into biz_station
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="deptId != null">dept_id,</if>
+            dept_id,
             <if test="stationName != null and stationName != ''">station_name,</if>
             <if test="stationProv != null and stationProv != ''">station_prov,</if>
             <if test="stationCity != null and stationCity != ''">station_city,</if>
@@ -61,7 +61,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updatedAt != null">updated_at,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="deptId != null">#{deptId},</if>
+            #{deptId},
             <if test="stationName != null and stationName != ''">#{stationName},</if>
             <if test="stationProv != null and stationProv != ''">#{stationProv},</if>
             <if test="stationCity != null and stationCity != ''">#{stationCity},</if>
