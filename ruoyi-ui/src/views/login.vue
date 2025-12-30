@@ -49,15 +49,20 @@
           <span v-if="!loading">登 录</span>
           <span v-else>登 录 中...</span>
         </el-button>
-        <div style="float: right;" v-if="register">
-          <router-link class="link-type" :to="'/register'">立即注册</router-link>
-        </div>
+        <router-link class="link-type" :to="'/register'">
+          <el-button
+            v-if="register"
+            size="medium"
+            type="primary"
+            plain
+            style="width:100%;margin-top:10px;"
+        >
+          <span v-if="!loading">注 册</span>
+          <span v-else>注 册</span>
+          </el-button>
+        </router-link>
       </el-form-item>
     </el-form>
-    <!--  底部  -->
-    <div class="el-login-footer">
-      <span>Copyright © 2018-2025 ruoyi.vip All Rights Reserved.</span>
-    </div>
   </div>
 </template>
 
@@ -92,7 +97,7 @@ export default {
       // 验证码开关
       captchaEnabled: true,
       // 注册开关
-      register: false,
+      register: true,
       redirect: undefined
     }
   },

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import com.ruoyi.business.mapper.BizPackMapper;
 import com.ruoyi.business.domain.BizPack;
 import com.ruoyi.business.service.IBizPackService;
+import com.ruoyi.common.utils.SecurityUtils;
 
 /**
  * 包裹表Service业务层处理
@@ -52,6 +53,11 @@ public class BizPackServiceImpl implements IBizPackService
     @Override
     public int insertBizPack(BizPack bizPack)
     {
+        // 如果前端没有传递senderId,则使用当前登录用户的ID
+        if (bizPack.getSenderId() == null || bizPack.getSenderId().isEmpty()) {
+            Long userId = SecurityUtils.getUserId();
+            bizPack.setSenderId(String.valueOf(userId));
+        }
         return bizPackMapper.insertBizPack(bizPack);
     }
 

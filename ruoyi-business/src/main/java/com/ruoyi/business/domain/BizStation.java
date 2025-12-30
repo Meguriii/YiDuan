@@ -62,6 +62,10 @@ public class BizStation extends BaseEntity
     @Excel(name = "更新时间", width = 30, dateFormat = "yyyy-MM-dd")
     private Date updatedAt;
 
+    /** 驿站名称 */
+    @Excel(name = "驿站名称")
+    private String stationName;
+
     public void setStationId(String stationId) 
     {
         this.stationId = stationId;
@@ -172,11 +176,22 @@ public class BizStation extends BaseEntity
         return updatedAt;
     }
 
+    public void setStationName(String stationName) 
+    {
+        this.stationName = stationName;
+    }
+
+    public String getStationName() 
+    {
+        return stationName;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("stationId", getStationId())
             .append("deptId", getDeptId())
+            .append("stationName", getStationName())
             .append("stationProv", getStationProv())
             .append("stationCity", getStationCity())
             .append("stationDist", getStationDist())

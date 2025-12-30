@@ -1,4 +1,4 @@
-package com.ruoyi.business.controller;
+package com.ruoyi.web.controller.business;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
@@ -44,19 +44,6 @@ public class BizStationController extends BaseController
         startPage();
         List<BizStation> list = bizStationService.selectBizStationList(bizStation);
         return getDataTable(list);
-    }
-
-    /**
-     * 导出驿站信息列表
-     */
-    @PreAuthorize("@ss.hasPermi('business:station:export')")
-    @Log(title = "驿站信息", businessType = BusinessType.EXPORT)
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, BizStation bizStation)
-    {
-        List<BizStation> list = bizStationService.selectBizStationList(bizStation);
-        ExcelUtil<BizStation> util = new ExcelUtil<BizStation>(BizStation.class);
-        util.exportExcel(response, list, "驿站信息数据");
     }
 
     /**

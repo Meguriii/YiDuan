@@ -7,7 +7,7 @@
           :key="item.value"
           :index="index"
           :class="item.raw.cssClass"
-          >{{ item.label + ' ' }}</span
+          >{{ item.label }}</span
         >
         <el-tag
           v-else
@@ -17,7 +17,7 @@
           :type="item.raw.listClass == 'primary' ? '' : item.raw.listClass"
           :class="item.raw.cssClass"
         >
-          {{ item.label + ' ' }}
+          {{ item.label }}
         </el-tag>
       </template>
     </template>

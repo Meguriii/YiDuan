@@ -101,4 +101,35 @@ public class BizClientController extends BaseController
     {
         return toAjax(bizClientService.deleteBizClientByClientIds(clientIds));
     }
+
+    /**
+     * 用户注册 - 不需要权限
+     */
+    @PostMapping("/register")
+    public AjaxResult register(@RequestBody BizClient bizClient)
+    {
+        // 检查手机号是否已存在
+        BizClient query = new BizClient();
+        query.setClientTel(bizClient.getClientTel());
+        List<BizClient> list = bizClientService.selectBizClientList(query);
+        if (!list.isEmpty()) {
+            return error("该手机号已注册");
+        }
+        
+        // 设置默认状态为正常
+        bizClient.setClientStatus("正常");
+        return toAjax(bizClientService.insertBizClient(bizClient));
+    }
+
+    /**
+     * 冻结/解冻用户 - 超级管理员功能
+     */
+    @PreAuthorize("@ss.hasPermi('business:client:freeze')")
+    @Log(title = "冻结用户", businessType = BusinessType.UPDATE)
+    @PutMapping("/freeze/{clientId}")
+    public AjaxResult freezeClient(@PathVariable String clientId, @RequestBody BizClient bizClient)
+    {
+        bizClient.setClientId(clientId);
+        return toAjax(bizClientService.updateBizClient(bizClient));
+    }
 }

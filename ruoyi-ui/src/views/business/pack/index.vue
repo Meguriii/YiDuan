@@ -25,13 +25,29 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="寄件详细地址" prop="senderAddrDetail">
+      <el-form-item label="寄件地址" prop="senderAddrDetail">
         <el-input
           v-model="queryParams.senderAddrDetail"
           placeholder="请输入寄件详细地址"
           clearable
           @keyup.enter.native="handleQuery"
         />
+      </el-form-item>
+      <el-form-item label="创建时间" prop="createdAt">
+        <el-date-picker clearable
+           v-model="queryParams.createdAt"
+           type="date"
+           value-format="yyyy-MM-dd"
+           placeholder="请选择创建时间">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item label="更新时间" prop="updatedAt">
+        <el-date-picker clearable
+           v-model="queryParams.updatedAt"
+           type="date"
+           value-format="yyyy-MM-dd"
+           placeholder="请选择更新时间">
+        </el-date-picker>
       </el-form-item>
       <el-form-item label="收件省" prop="receiverProv">
         <el-input
@@ -57,7 +73,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="收件详细地址" prop="receiverAddrDetail">
+      <el-form-item label="收件地址" prop="receiverAddrDetail">
         <el-input
           v-model="queryParams.receiverAddrDetail"
           placeholder="请输入收件详细地址"
@@ -65,7 +81,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="收件人姓名" prop="receiverName">
+      <el-form-item label="收件姓名" prop="receiverName">
         <el-input
           v-model="queryParams.receiverName"
           placeholder="请输入收件人姓名"
@@ -73,7 +89,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="收件人手机号" prop="receiverTel">
+      <el-form-item label="收件手机" prop="receiverTel">
         <el-input
           v-model="queryParams.receiverTel"
           placeholder="请输入收件人手机号"
@@ -97,7 +113,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="是否危险品" prop="isDangerous">
+      <el-form-item label="是否危险" prop="isDangerous">
         <el-input
           v-model="queryParams.isDangerous"
           placeholder="请输入是否危险品"
@@ -128,22 +144,6 @@
           clearable
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
-      <el-form-item label="创建时间" prop="createdAt">
-        <el-date-picker clearable
-          v-model="queryParams.createdAt"
-          type="date"
-          value-format="yyyy-MM-dd"
-          placeholder="请选择创建时间">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="更新时间" prop="updatedAt">
-        <el-date-picker clearable
-          v-model="queryParams.updatedAt"
-          type="date"
-          value-format="yyyy-MM-dd"
-          placeholder="请选择更新时间">
-        </el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -215,9 +215,21 @@
       <el-table-column label="重量" align="center" prop="weight" />
       <el-table-column label="体积" align="center" prop="volume" />
       <el-table-column label="备注" align="center" prop="note" />
-      <el-table-column label="是否危险品" align="center" prop="isDangerous" />
-      <el-table-column label="是否易碎" align="center" prop="isFragile" />
-      <el-table-column label="是否加急" align="center" prop="isUrgent" />
+      <el-table-column label="是否危险品" align="center" prop="isDangerous" >
+      <template slot-scope="scope">
+        <dict-tag :options="dict.type.biz_yes_no" :value="scope.row.isDangerous"/>
+      </template>
+      </el-table-column>
+      <el-table-column label="是否易碎" align="center" prop="isFragile" >
+      <template slot-scope="scope">
+        <dict-tag :options="dict.type.biz_yes_no" :value="scope.row.isFragile"/>
+      </template>
+      </el-table-column>
+      <el-table-column label="是否加急" align="center" prop="isUrgent" >
+      <template slot-scope="scope">
+        <dict-tag :options="dict.type.biz_yes_no" :value="scope.row.isUrgent"/>
+      </template>
+      </el-table-column>
       <el-table-column label="包裹状态" align="center" prop="status" />
       <el-table-column label="取件码" align="center" prop="pickupCode" />
       <el-table-column label="创建时间" align="center" prop="createdAt" width="180">
@@ -242,6 +254,13 @@
           <el-button
             size="mini"
             type="text"
+            icon="el-icon-edit-outline"
+            @click="handleUpdateStatus(scope.row)"
+            v-hasPermi="['business:pack:edit']"
+          >修改状态</el-button>
+          <el-button
+            size="mini"
+            type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['business:pack:remove']"
@@ -261,6 +280,22 @@
     <!-- 添加或修改包裹表对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="寄件地址" prop="senderAddr">
+          <el-select
+            v-model="senderAddrSelected"
+            placeholder="请选择地址或手动输入"
+            filterable
+            allow-create
+            @change="handleSenderAddrChange"
+            style="width: 100%">
+            <el-option
+              v-for="addr in addrList"
+              :key="addr.addrId"
+              :label="addr.addrProv + addr.addrCity + addr.addrDist + addr.addrDetail"
+              :value="addr.addrId">
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="寄件省" prop="senderProv">
           <el-input v-model="form.senderProv" placeholder="请输入寄件省" />
         </el-form-item>
@@ -273,11 +308,27 @@
         <el-form-item label="寄件详细地址" prop="senderAddrDetail">
           <el-input v-model="form.senderAddrDetail" placeholder="请输入寄件详细地址" />
         </el-form-item>
-        <el-form-item label="收件人姓名" prop="receiverName">
+        <el-form-item label="收件姓名" prop="receiverName">
           <el-input v-model="form.receiverName" placeholder="请输入收件人姓名" />
         </el-form-item>
-        <el-form-item label="收件人手机号" prop="receiverTel">
+        <el-form-item label="收件手机" prop="receiverTel">
           <el-input v-model="form.receiverTel" placeholder="请输入收件人手机号" />
+        </el-form-item>
+        <el-form-item label="收件地址" prop="receiverAddr">
+          <el-select
+            v-model="receiverAddrSelected"
+            placeholder="请选择地址或手动输入"
+            filterable
+            allow-create
+            @change="handleReceiverAddrChange"
+            style="width: 100%">
+            <el-option
+              v-for="addr in addrList"
+              :key="addr.addrId"
+              :label="addr.addrProv + addr.addrCity + addr.addrDist + addr.addrDetail"
+              :value="addr.addrId">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="收件省" prop="receiverProv">
           <el-input v-model="form.receiverProv" placeholder="请输入收件省" />
@@ -300,48 +351,85 @@
         <el-form-item label="备注" prop="note">
           <el-input v-model="form.note" type="textarea" placeholder="请输入内容" />
         </el-form-item>
-        <el-form-item label="是否危险品" prop="isDangerous">
-          <el-input v-model="form.isDangerous" placeholder="请输入是否危险品" />
+        <el-form-item label="是否危险" prop="isDangerous" >
+          <el-switch v-model="form.isDangerous" :active-value='1' :inactive-value='0'></el-switch>
         </el-form-item>
-        <el-form-item label="是否易碎" prop="isFragile">
-          <el-input v-model="form.isFragile" placeholder="请输入是否易碎" />
+        <el-form-item label="是否易碎" prop="isFragile" >
+          <el-switch v-model="form.isFragile" :active-value='1' :inactive-value='0'></el-switch>
         </el-form-item>
-        <el-form-item label="是否加急" prop="isUrgent">
-          <el-input v-model="form.isUrgent" placeholder="请输入是否加急" />
+        <el-form-item label="是否加急" prop="isUrgent" >
+          <el-switch v-model="form.isUrgent" :active-value='1' :inactive-value='0'></el-switch>
         </el-form-item>
-        <el-form-item label="取件码" prop="pickupCode">
-          <el-input v-model="form.pickupCode" placeholder="请输入取件码" />
-        </el-form-item>
-        <el-form-item label="创建时间" prop="createdAt">
-          <el-date-picker clearable
-            v-model="form.createdAt"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="请选择创建时间">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="更新时间" prop="updatedAt">
-          <el-date-picker clearable
-            v-model="form.updatedAt"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="请选择更新时间">
-          </el-date-picker>
-        </el-form-item>
+<!--        <el-form-item label="取件码" prop="pickupCode">-->
+<!--          <el-input v-model="form.pickupCode" placeholder="请输入取件码" />-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="创建时间" prop="createdAt">-->
+<!--          <el-date-picker clearable-->
+<!--            v-model="form.createdAt"-->
+<!--            type="date"-->
+<!--            value-format="yyyy-MM-dd"-->
+<!--            placeholder="请选择创建时间">-->
+<!--          </el-date-picker>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="更新时间" prop="updatedAt">-->
+<!--          <el-date-picker clearable-->
+<!--            v-model="form.updatedAt"-->
+<!--            type="date"-->
+<!--            value-format="yyyy-MM-dd"-->
+<!--            placeholder="请选择更新时间">-->
+<!--          </el-date-picker>-->
+<!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 修改包裹状态对话框 -->
+    <el-dialog :title="statusDialogTitle" :visible.sync="statusOpen" width="500px" append-to-body>
+      <el-form ref="statusForm" :model="statusForm" :rules="statusRules" label-width="80px">
+        <el-form-item label="包裹ID" prop="packId">
+          <el-input v-model="statusForm.packId" disabled />
+        </el-form-item>
+        <el-form-item label="当前状态" prop="currentStatus">
+          <el-input v-model="statusForm.currentStatus" disabled />
+        </el-form-item>
+        <el-form-item label="新状态" prop="newStatus">
+          <el-select v-model="statusForm.newStatus" placeholder="请选择新状态" style="width: 100%">
+            <el-option label="待揽收" value="待揽收" />
+            <el-option label="寄出待核验" value="寄出待核验" />
+            <el-option label="寄出已核验" value="寄出已核验" />
+            <el-option label="运输中" value="运输中" />
+            <el-option label="到站待核验" value="到站待核验" />
+            <el-option label="入库已核验" value="入库已核验" />
+            <el-option label="待上架" value="待上架" />
+            <el-option label="待取件" value="待取件" />
+            <el-option label="已取件" value="已取件" />
+            <el-option label="拒收" value="拒收" />
+            <el-option label="退件" value="退件" />
+            <el-option label="异常" value="异常" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="备注" prop="note">
+          <el-input v-model="statusForm.note" type="textarea" placeholder="请输入备注信息" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitStatusForm">确 定</el-button>
+        <el-button @click="cancelStatus">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { listPack, getPack, delPack, addPack, updatePack } from "@/api/business/pack"
+import { listPack, getPack, delPack, addPack, updatePack, updatePackStatus } from "@/api/business/pack"
+import { listAddr, addAddr } from "@/api/business/addr"
 
 export default {
   name: "Pack",
+  dicts: ['biz_yes_no'],
   data() {
     return {
       // 遮罩层
@@ -362,6 +450,8 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      // 地址列表
+      addrList: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -390,7 +480,15 @@ export default {
         updatedAt: null
       },
       // 表单参数
-      form: {},
+      form: {
+          isDangerous: 0,
+          isFragile: 0,
+          isUrgent: 0
+      },
+      // 选中的寄件地址
+      senderAddrSelected: null,
+      // 选中的收件地址
+      receiverAddrSelected: null,
       // 表单校验
       rules: {
         senderId: [
@@ -444,13 +542,34 @@ export default {
         updatedAt: [
           { required: true, message: "更新时间不能为空", trigger: "blur" }
         ]
+      },
+      // 修改包裹状态相关数据
+      statusOpen: false,
+      statusDialogTitle: "",
+      statusForm: {
+        packId: null,
+        currentStatus: null,
+        newStatus: null,
+        note: null
+      },
+      statusRules: {
+        newStatus: [
+          { required: true, message: "新状态不能为空", trigger: "change" }
+        ]
       }
     }
   },
   created() {
     this.getList()
+    this.getAddrList()
   },
   methods: {
+    /** 查询地址列表 */
+    getAddrList() {
+      listAddr({pageNum: 1, pageSize: 1000}).then(response => {
+        this.addrList = response.rows
+      })
+    },
     /** 查询包裹表列表 */
     getList() {
       this.loading = true
@@ -492,7 +611,35 @@ export default {
         createdAt: null,
         updatedAt: null
       }
+      this.senderAddrSelected = null
+      this.receiverAddrSelected = null
       this.resetForm("form")
+    },
+    /** 寄件地址选择改变 */
+    handleSenderAddrChange(val) {
+      if (val) {
+        const addr = this.addrList.find(item => item.addrId === val)
+        if (addr) {
+          this.form.senderProv = addr.addrProv
+          this.form.senderCity = addr.addrCity
+          this.form.senderDist = addr.addrDist
+          this.form.senderAddrDetail = addr.addrDetail
+        }
+      }
+    },
+    /** 收件地址选择改变 */
+    handleReceiverAddrChange(val) {
+      if (val) {
+        const addr = this.addrList.find(item => item.addrId === val)
+        if (addr) {
+          this.form.receiverProv = addr.addrProv
+          this.form.receiverCity = addr.addrCity
+          this.form.receiverDist = addr.addrDist
+          this.form.receiverAddrDetail = addr.addrDetail
+          this.form.receiverName = addr.addrName
+          this.form.receiverTel = addr.addrTel
+        }
+      }
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -530,19 +677,78 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.packId != null) {
-            updatePack(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功")
-              this.open = false
-              this.getList()
-            })
-          } else {
-            addPack(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功")
-              this.open = false
-              this.getList()
-            })
+          // 先保存新地址（如果需要）
+          const promises = []
+
+          // 检查是否需要保存新的寄件地址
+          if (this.form.senderProv && this.form.senderCity && this.form.senderDist && this.form.senderAddrDetail) {
+            const existingSender = this.addrList.find(addr =>
+              addr.addrProv === this.form.senderProv &&
+              addr.addrCity === this.form.senderCity &&
+              addr.addrDist === this.form.senderDist &&
+              addr.addrDetail === this.form.senderAddrDetail
+            )
+            if (!existingSender) {
+              const newSenderAddr = {
+                addrProv: this.form.senderProv,
+                addrCity: this.form.senderCity,
+                addrDist: this.form.senderDist,
+                addrDetail: this.form.senderAddrDetail,
+                addrName: '寄件地址',
+                addrTel: '',
+                isDefault: 0
+              }
+              promises.push(addAddr(newSenderAddr))
+            }
           }
+
+          // 检查是否需要保存新的收件地址
+          if (this.form.receiverProv && this.form.receiverCity && this.form.receiverDist && this.form.receiverAddrDetail) {
+            const existingReceiver = this.addrList.find(addr =>
+              addr.addrProv === this.form.receiverProv &&
+              addr.addrCity === this.form.receiverCity &&
+              addr.addrDist === this.form.receiverDist &&
+              addr.addrDetail === this.form.receiverAddrDetail
+            )
+            if (!existingReceiver) {
+              const newReceiverAddr = {
+                addrProv: this.form.receiverProv,
+                addrCity: this.form.receiverCity,
+                addrDist: this.form.receiverDist,
+                addrDetail: this.form.receiverAddrDetail,
+                addrName: this.form.receiverName || '收件地址',
+                addrTel: this.form.receiverTel || '',
+                isDefault: 0
+              }
+              promises.push(addAddr(newReceiverAddr))
+            }
+          }
+
+          // 等待地址保存完成后再保存包裹
+          Promise.all(promises).then(() => {
+            // 刷新地址列表
+            if (promises.length > 0) {
+              this.getAddrList()
+            }
+
+            // 保存包裹
+            if (this.form.packId != null) {
+              updatePack(this.form).then(response => {
+                this.$modal.msgSuccess("修改成功")
+                this.open = false
+                this.getList()
+              })
+            } else {
+              addPack(this.form).then(response => {
+                this.$modal.msgSuccess("新增成功")
+                this.open = false
+                this.getList()
+              })
+            }
+          }).catch(error => {
+            this.$modal.msgError("地址保存失败")
+            console.error(error)
+          })
         }
       })
     },
@@ -561,6 +767,49 @@ export default {
       this.download('business/pack/export', {
         ...this.queryParams
       }, `pack_${new Date().getTime()}.xlsx`)
+    },
+    /** 修改包裹状态按钮操作 */
+    handleUpdateStatus(row) {
+      this.resetStatusForm();
+      this.statusForm.packId = row.packId;
+      this.statusForm.currentStatus = row.status;
+      this.statusDialogTitle = "修改包裹状态";
+      this.statusOpen = true;
+    },
+    // 修改包裹状态表单重置
+    resetStatusForm() {
+      this.statusForm = {
+        packId: null,
+        currentStatus: null,
+        newStatus: null,
+        note: null
+      };
+      this.resetForm("statusForm");
+    },
+    // 取消修改包裹状态
+    cancelStatus() {
+      this.statusOpen = false;
+      this.resetStatusForm();
+    },
+    // 提交修改包裹状态
+    submitStatusForm() {
+      this.$refs["statusForm"].validate(valid => {
+        if (valid) {
+          const data = {
+            status: this.statusForm.newStatus,
+            note: this.statusForm.note
+          };
+          updatePackStatus(this.statusForm.packId, data).then(response => {
+            if (response.code === 200) {
+              this.$modal.msgSuccess("修改包裹状态成功");
+              this.statusOpen = false;
+              this.getList();
+            } else {
+              this.$modal.msgError("修改包裹状态失败: " + response.msg);
+            }
+          });
+        }
+      });
     }
   }
 }

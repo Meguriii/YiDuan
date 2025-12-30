@@ -34,6 +34,7 @@ CREATE TABLE biz_client (
 DROP TABLE IF EXISTS biz_station;
 CREATE TABLE biz_station (
                              station_id      BIGINT UNSIGNED     NOT NULL AUTO_INCREMENT COMMENT '驿站ID',
+                             station_name    VARCHAR(200)        NOT NULL DEFAULT ''     COMMENT '驿站名称',
                              dept_id         BIGINT(20)          NOT NULL                COMMENT '对应部门ID（一对一）',
 
                              station_prov    VARCHAR(64)         NOT NULL                COMMENT '省',
@@ -149,7 +150,6 @@ CREATE TABLE biz_pack (
                               FOREIGN KEY (sender_id) REFERENCES biz_client(client_id)
                                   ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='包裹表（地址文本化，不关联地址表）';
-
 
 
 /* ==========================================

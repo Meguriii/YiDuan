@@ -134,7 +134,13 @@
       <el-table-column label="区县" align="center" prop="stationDist" />
       <el-table-column label="详细地址" align="center" prop="stationAddr" />
       <el-table-column label="负责人ID" align="center" prop="contactUserId" />
-      <el-table-column label="驿站状态" align="center" prop="status" />
+      <el-table-column label="驿站状态" align="center" prop="status">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.status === '待审核'" type="warning">待审核</el-tag>
+          <el-tag v-else-if="scope.row.status === '正常'" type="success">正常</el-tag>
+          <el-tag v-else type="danger">停用</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="联系电话" align="center" prop="tel" />
       <el-table-column label="创建时间" align="center" prop="createdAt" width="180">
         <template slot-scope="scope">
@@ -146,8 +152,16 @@
           <span>{{ parseTime(scope.row.updatedAt, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200">
         <template slot-scope="scope">
+          <el-button
+            v-if="scope.row.status === '待审核'"
+            size="mini"
+            type="success"
+            icon="el-icon-check"
+            @click="handleAudit(scope.row)"
+            v-hasPermi="['business:station:audit']"
+          >审核</el-button>
           <el-button
             size="mini"
             type="text"
@@ -220,14 +234,45 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 审核对话框 -->
+    <el-dialog title="驿站审核" :visible.sync="auditOpen" width="500px" append-to-body>
+      <el-form ref="auditForm" :model="auditForm" :rules="auditRules" label-width="100px">
+        <el-form-item label="驿站名称">
+          <el-input v-model="auditForm.stationName" :disabled="true" />
+        </el-form-item>
+        <el-form-item label="选择部门" prop="parentDeptId">
+          <treeselect
+            v-model="auditForm.parentDeptId"
+            :options="deptOptions"
+            :normalizer="normalizerDept"
+            placeholder="请选择上级部门"
+          />
+        </el-form-item>
+        <el-form-item label="审核状态" prop="status">
+          <el-radio-group v-model="auditForm.status">
+            <el-radio label="正常">通过</el-radio>
+            <el-radio label="停用">不通过</el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitAudit">确 定</el-button>
+        <el-button @click="auditOpen = false">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { listStation, getStation, delStation, addStation, updateStation } from "@/api/business/station"
+import { listDept } from "@/api/system/dept"
+import Treeselect from "@riophae/vue-treeselect"
+import "@riophae/vue-treeselect/dist/vue-treeselect.css"
 
 export default {
   name: "Station",
+  components: { Treeselect },
   data() {
     return {
       // 遮罩层
@@ -248,6 +293,12 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      // 审核对话框
+      auditOpen: false,
+      // 审核表单
+      auditForm: {},
+      // 部门树选项
+      deptOptions: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -291,11 +342,21 @@ export default {
         updatedAt: [
           { required: true, message: "更新时间不能为空", trigger: "blur" }
         ]
+      },
+      // 审核表单校验
+      auditRules: {
+        parentDeptId: [
+          { required: true, message: "请选择部门", trigger: "change" }
+        ],
+        status: [
+          { required: true, message: "请选择审核状态", trigger: "change" }
+        ]
       }
     }
   },
   created() {
     this.getList()
+    this.getDeptList()
   },
   methods: {
     /** 查询驿站信息列表 */
@@ -396,6 +457,49 @@ export default {
       this.download('business/station/export', {
         ...this.queryParams
       }, `station_${new Date().getTime()}.xlsx`)
+    },
+    /** 获取部门列表 */
+    getDeptList() {
+      listDept().then(response => {
+        this.deptOptions = this.handleTree(response.data, "deptId")
+      })
+    },
+    /** 转换部门数据结构 */
+    normalizerDept(node) {
+      if (node.children && !node.children.length) {
+        delete node.children;
+      }
+      return {
+        id: node.deptId,
+        label: node.deptName,
+        children: node.children
+      };
+    },
+    /** 审核按钮操作 */
+    handleAudit(row) {
+      this.auditForm = {
+        stationId: row.stationId,
+        stationName: row.stationName,
+        parentDeptId: null,
+        status: "正常"
+      }
+      this.auditOpen = true
+    },
+    /** 提交审核 */
+    submitAudit() {
+      this.$refs["auditForm"].validate(valid => {
+        if (valid) {
+          const params = {
+            status: this.auditForm.status,
+            parentDeptId: this.auditForm.parentDeptId
+          }
+          auditStation(this.auditForm.stationId, params).then(response => {
+            this.$modal.msgSuccess("审核成功")
+            this.auditOpen = false
+            this.getList()
+          })
+        }
+      })
     }
   }
 }

@@ -70,7 +70,7 @@ public class BizStationServiceImpl implements IBizStationService
     /**
      * 批量删除驿站信息
      * 
-     * @param stationIds 需要删除的驿站信息主键
+     * @param stationIds 需要删除的驿站信息主键集合
      * @return 结果
      */
     @Override
