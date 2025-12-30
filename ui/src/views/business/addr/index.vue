@@ -128,7 +128,7 @@
     <el-table v-loading="loading" :data="addrList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="地址ID" align="center" prop="addrId" />
-      <el-table-column label="所属用户(biz_client)" align="center" prop="clientId" />
+      <el-table-column label="所属用户" align="center" prop="clientId" />
       <el-table-column label="姓名" align="center" prop="addrName" />
       <el-table-column label="电话" align="center" prop="addrTel" />
       <el-table-column label="省" align="center" prop="addrProv" />
@@ -165,7 +165,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -402,6 +402,24 @@ export default {
       this.download('business/addr/export', {
         ...this.queryParams
       }, `addr_${new Date().getTime()}.xlsx`)
+    },
+    // 检查是否为超级管理员
+    isSuperAdmin() {
+      // 获取当前用户角色信息
+      const userRoles = this.$store.state.user.roles;
+      // 超级管理员roleID为1
+      return userRoles.some(role => role.roleId === 1);
+    },
+    /** 修改状态按钮操作 */
+    handleUpdateStatus(row) {
+      const addrIds = row.addrId || this.ids;
+      this.$modal.confirm('请确认是否修改地址簿编号为"' + addrIds + '"的状态？').then(function() {
+        // 这里需要后端提供修改状态的API
+        // updateAddrStatus(addrIds).then(response => {
+        //   this.$modal.msgSuccess("状态修改成功");
+        //   this.getList();
+        // });
+      }).catch(() => {});
     }
   }
 }

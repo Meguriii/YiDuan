@@ -17,6 +17,7 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.business.domain.BizPack;
+import com.ruoyi.business.domain.BizPackWithSender;
 import com.ruoyi.business.service.IBizPackService;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
@@ -47,6 +48,18 @@ public class BizPackController extends BaseController
         List<BizPack> list = bizPackService.selectBizPackList(bizPack);
         return getDataTable(list);
     }
+    
+    /**
+     * 查询包裹表列表(包含寄件人信息)
+     */
+    @PreAuthorize("@ss.hasPermi('business:pack:list')")
+    @GetMapping("/listWithSender")
+    public TableDataInfo listWithSender(BizPack bizPack)
+    {
+        startPage();
+        List<BizPackWithSender> list = bizPackService.selectBizPackListWithSender(bizPack);
+        return getDataTable(list);
+    }
 
     /**
      * 导出包裹表列表
@@ -60,6 +73,19 @@ public class BizPackController extends BaseController
         ExcelUtil<BizPack> util = new ExcelUtil<BizPack>(BizPack.class);
         util.exportExcel(response, list, "包裹表数据");
     }
+    
+    /**
+     * 导出包裹表列表(包含寄件人信息)
+     */
+    @PreAuthorize("@ss.hasPermi('business:pack:export')")
+    @Log(title = "包裹表", businessType = BusinessType.EXPORT)
+    @PostMapping("/exportWithSender")
+    public void exportWithSender(HttpServletResponse response, BizPack bizPack)
+    {
+        List<BizPackWithSender> list = bizPackService.selectBizPackListWithSender(bizPack);
+        ExcelUtil<BizPackWithSender> util = new ExcelUtil<BizPackWithSender>(BizPackWithSender.class);
+        util.exportExcel(response, list, "包裹表数据(含寄件人信息)");
+    }
 
     /**
      * 获取包裹表详细信息
@@ -69,6 +95,16 @@ public class BizPackController extends BaseController
     public AjaxResult getInfo(@PathVariable("packId") String packId)
     {
         return success(bizPackService.selectBizPackByPackId(packId));
+    }
+    
+    /**
+     * 获取包裹详细信息(包含寄件人信息)
+     */
+    @PreAuthorize("@ss.hasPermi('business:pack:query')")
+    @GetMapping(value = "/detail/{packId}")
+    public AjaxResult getDetailInfo(@PathVariable("packId") String packId)
+    {
+        return success(bizPackService.selectBizPackWithSenderByPackId(packId));
     }
 
     /**

@@ -29,11 +29,39 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="createdAt"    column="created_at"    />
         <result property="updatedAt"    column="updated_at"    />
     </resultMap>
+    
+    <resultMap type="BizPackWithSender" id="BizPackWithSenderResult">
+        <result property="packId"    column="pack_id"    />
+        <result property="senderId"    column="sender_id"    />
+        <result property="senderName"    column="client_name"    />
+        <result property="senderTel"    column="client_tel"    />
+        <result property="senderProv"    column="sender_prov"    />
+        <result property="senderCity"    column="sender_city"    />
+        <result property="senderDist"    column="sender_dist"    />
+        <result property="senderAddrDetail"    column="sender_addr_detail"    />
+        <result property="receiverId"    column="receiver_id"    />
+        <result property="receiverName"    column="receiver_name"    />
+        <result property="receiverTel"    column="receiver_tel"    />
+        <result property="receiverProv"    column="receiver_prov"    />
+        <result property="receiverCity"    column="receiver_city"    />
+        <result property="receiverDist"    column="receiver_dist"    />
+        <result property="receiverAddrDetail"    column="receiver_addr_detail"    />
+        <result property="weight"    column="weight"    />
+        <result property="volume"    column="volume"    />
+        <result property="note"    column="note"    />
+        <result property="isDangerous"    column="is_dangerous"    />
+        <result property="isFragile"    column="is_fragile"    />
+        <result property="isUrgent"    column="is_urgent"    />
+        <result property="status"    column="status"    />
+        <result property="pickupCode"    column="pickup_code"    />
+        <result property="createdAt"    column="created_at"    />
+        <result property="updatedAt"    column="updated_at"    />
+    </resultMap>
 
     <sql id="selectBizPackVo">
         select pack_id, sender_id, sender_prov, sender_city, sender_dist, sender_addr_detail, receiver_id, receiver_name, receiver_tel, receiver_prov, receiver_city, receiver_dist, receiver_addr_detail, weight, volume, note, is_dangerous, is_fragile, is_urgent, status, pickup_code, created_at, updated_at from biz_pack
     </sql>
-
+    
     <select id="selectBizPackList" parameterType="BizPack" resultMap="BizPackResult">
         <include refid="selectBizPackVo"/>
         <where>  
@@ -51,7 +79,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="receiverAddrDetail != null  and receiverAddrDetail != ''"> and receiver_addr_detail = #{receiverAddrDetail}</if>
             <if test="weight != null "> and weight = #{weight}</if>
             <if test="volume != null "> and volume = #{volume}</if>
-            <if test="note != null  and note != ''"> and note = #{note}</if>
+            <if test="note != null "> and note = #{note}</if>
             <if test="isDangerous != null "> and is_dangerous = #{isDangerous}</if>
             <if test="isFragile != null "> and is_fragile = #{isFragile}</if>
             <if test="isUrgent != null "> and is_urgent = #{isUrgent}</if>
@@ -62,9 +90,96 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
     </select>
     
+    <select id="selectBizPackListWithSender" parameterType="BizPack" resultMap="BizPackWithSenderResult">
+        select 
+            bp.pack_id, 
+            bp.sender_id, 
+            bc.client_name,
+            bc.client_tel,
+            bp.sender_prov, 
+            bp.sender_city, 
+            bp.sender_dist, 
+            bp.sender_addr_detail, 
+            bp.receiver_id, 
+            bp.receiver_name, 
+            bp.receiver_tel, 
+            bp.receiver_prov, 
+            bp.receiver_city, 
+            bp.receiver_dist, 
+            bp.receiver_addr_detail, 
+            bp.weight, 
+            bp.volume, 
+            bp.note, 
+            bp.is_dangerous, 
+            bp.is_fragile, 
+            bp.is_urgent, 
+            bp.status, 
+            bp.pickup_code, 
+            bp.created_at, 
+            bp.updated_at 
+        from biz_pack bp
+        left join biz_client bc on bp.sender_id = bc.client_id
+        <where>  
+            <if test="senderId != null  and senderId != ''"> and bp.sender_id = #{senderId}</if>
+            <if test="senderProv != null  and senderProv != ''"> and bp.sender_prov = #{senderProv}</if>
+            <if test="senderCity != null  and senderCity != ''"> and bp.sender_city = #{senderCity}</if>
+            <if test="senderDist != null  and senderDist != ''"> and bp.sender_dist = #{senderDist}</if>
+            <if test="senderAddrDetail != null  and senderAddrDetail != ''"> and bp.sender_addr_detail = #{senderAddrDetail}</if>
+            <if test="receiverId != null  and receiverId != ''"> and bp.receiver_id = #{receiverId}</if>
+            <if test="receiverName != null  and receiverName != ''"> and bp.receiver_name like concat('%', #{receiverName}, '%')</if>
+            <if test="receiverTel != null  and receiverTel != ''"> and bp.receiver_tel = #{receiverTel}</if>
+            <if test="receiverProv != null  and receiverProv != ''"> and bp.receiver_prov = #{receiverProv}</if>
+            <if test="receiverCity != null  and receiverCity != ''"> and bp.receiver_city = #{receiverCity}</if>
+            <if test="receiverDist != null  and receiverDist != ''"> and bp.receiver_dist = #{receiverDist}</if>
+            <if test="receiverAddrDetail != null  and receiverAddrDetail != ''"> and bp.receiver_addr_detail = #{receiverAddrDetail}</if>
+            <if test="weight != null "> and bp.weight = #{weight}</if>
+            <if test="volume != null "> and bp.volume = #{volume}</if>
+            <if test="note != null "> and bp.note = #{note}</if>
+            <if test="isDangerous != null "> and bp.is_dangerous = #{isDangerous}</if>
+            <if test="isFragile != null "> and bp.is_fragile = #{isFragile}</if>
+            <if test="isUrgent != null "> and bp.is_urgent = #{isUrgent}</if>
+            <if test="status != null  and status != ''"> and bp.status = #{status}</if>
+            <if test="pickupCode != null  and pickupCode != ''"> and bp.pickup_code = #{pickupCode}</if>
+            <if test="createdAt != null "> and bp.created_at = #{createdAt}</if>
+            <if test="updatedAt != null "> and bp.updated_at = #{updatedAt}</if>
+        </where>
+    </select>
+    
     <select id="selectBizPackByPackId" parameterType="String" resultMap="BizPackResult">
         <include refid="selectBizPackVo"/>
         where pack_id = #{packId}
+    </select>
+    
+    <select id="selectBizPackWithSenderByPackId" parameterType="String" resultMap="BizPackWithSenderResult">
+        select 
+            bp.pack_id, 
+            bp.sender_id, 
+            bc.client_name,
+            bc.client_tel,
+            bp.sender_prov, 
+            bp.sender_city, 
+            bp.sender_dist, 
+            bp.sender_addr_detail, 
+            bp.receiver_id, 
+            bp.receiver_name, 
+            bp.receiver_tel, 
+            bp.receiver_prov, 
+            bp.receiver_city, 
+            bp.receiver_dist, 
+            bp.receiver_addr_detail, 
+            bp.weight, 
+            bp.volume, 
+            bp.note, 
+            bp.is_dangerous, 
+            bp.is_fragile, 
+            bp.is_urgent, 
+            bp.status, 
+            bp.pickup_code, 
+            bp.created_at, 
+            bp.updated_at 
+        from biz_pack bp
+        left join biz_client bc on bp.sender_id = bc.client_id
+        where bp.pack_id = #{packId}
     </select>
 
     <insert id="insertBizPack" parameterType="BizPack" useGeneratedKeys="true" keyProperty="packId">

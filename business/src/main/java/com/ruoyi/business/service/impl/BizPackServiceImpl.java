@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.business.mapper.BizPackMapper;
 import com.ruoyi.business.domain.BizPack;
+import com.ruoyi.business.domain.BizPackWithSender;
 import com.ruoyi.business.service.IBizPackService;
 import com.ruoyi.common.utils.SecurityUtils;
 
@@ -32,6 +33,12 @@ public class BizPackServiceImpl implements IBizPackService
         return bizPackMapper.selectBizPackByPackId(packId);
     }
 
+    @Override
+    public BizPackWithSender selectBizPackWithSenderByPackId(String packId)
+    {
+        return bizPackMapper.selectBizPackWithSenderByPackId(packId);
+    }
+
     /**
      * 查询包裹表列表
      * 
@@ -42,6 +49,12 @@ public class BizPackServiceImpl implements IBizPackService
     public List<BizPack> selectBizPackList(BizPack bizPack)
     {
         return bizPackMapper.selectBizPackList(bizPack);
+    }
+
+    @Override
+    public List<BizPackWithSender> selectBizPackListWithSender(BizPack bizPack)
+    {
+        return bizPackMapper.selectBizPackListWithSender(bizPack);
     }
 
     /**

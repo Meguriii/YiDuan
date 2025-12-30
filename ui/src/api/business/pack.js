@@ -9,10 +9,27 @@ export function listPack(query) {
   })
 }
 
+// 查询包裹表列表(包含寄件人信息)
+export function listPackWithSender(query) {
+  return request({
+    url: '/business/pack/listWithSender',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询包裹表详细
 export function getPack(packId) {
   return request({
     url: '/business/pack/' + packId,
+    method: 'get'
+  })
+}
+
+// 查询包裹表详细(包含寄件人信息)
+export function getPackWithSender(packId) {
+  return request({
+    url: '/business/pack/detail/' + packId,
     method: 'get'
   })
 }
