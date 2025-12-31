@@ -108,13 +108,30 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="上级菜单" prop="parentId">
-              <treeselect
-                v-model="form.parentId"
-                :options="menuOptions"
-                :normalizer="normalizer"
-                :show-count="true"
-                placeholder="选择上级菜单"
-              />
+              <div class="parent-selector">
+                <div class="selector-toggle">
+                  <el-link type="primary" @click="toggleParentSelector">
+                    {{ useCascader ? '切换树选择' : '切换级联选择' }}
+                  </el-link>
+                </div>
+                <treeselect
+                  v-if="!useCascader"
+                  v-model="form.parentId"
+                  :options="menuOptions"
+                  :normalizer="normalizer"
+                  :show-count="true"
+                  placeholder="选择上级菜单"
+                />
+                <el-cascader
+                  v-else
+                  v-model="form.parentId"
+                  :options="cascaderOptions"
+                  :props="cascaderProps"
+                  clearable
+                  filterable
+                  placeholder="选择上级菜单 (级联)"
+                />
+              </div>
             </el-form-item>
           </el-col>
         </el-row>
@@ -318,6 +335,12 @@ export default {
       menuList: [],
       // 菜单树选项
       menuOptions: [],
+      // 级联菜单选项
+      cascaderOptions: [],
+      // 是否使用级联选择
+      useCascader: false,
+      // 级联属性
+      cascaderProps: { checkStrictly: true, emitPath: false, value: 'menuId', label: 'menuName', children: 'children' },
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -381,7 +404,13 @@ export default {
         const menu = { menuId: 0, menuName: '主类目', children: [] }
         menu.children = this.handleTree(response.data, "menuId")
         this.menuOptions.push(menu)
+        // 级联菜单数据与树保持一致
+        this.cascaderOptions = [menu]
       })
+    },
+    // 切换父级选择器
+    toggleParentSelector() {
+      this.useCascader = !this.useCascader
     },
     // 取消按钮
     cancel() {
@@ -475,3 +504,16 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.parent-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.selector-toggle {
+  display: flex;
+  justify-content: flex-end;
+}
+</style>

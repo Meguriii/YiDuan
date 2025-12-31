@@ -102,7 +102,29 @@
         <el-row>
           <el-col :span="24" v-if="form.parentId !== 0">
             <el-form-item label="上级部门" prop="parentId">
-              <treeselect v-model="form.parentId" :options="deptOptions" :normalizer="normalizer" placeholder="选择上级部门" />
+              <div class="parent-selector">
+                <div class="selector-toggle">
+                  <el-link type="primary" @click="toggleParentSelector">
+                    {{ useCascader ? '切换树选择' : '切换级联选择' }}
+                  </el-link>
+                </div>
+                <treeselect
+                  v-if="!useCascader"
+                  v-model="form.parentId"
+                  :options="deptOptions"
+                  :normalizer="normalizer"
+                  placeholder="选择上级部门"
+                />
+                <el-cascader
+                  v-else
+                  v-model="form.parentId"
+                  :options="cascaderOptions"
+                  :props="cascaderProps"
+                  clearable
+                  filterable
+                  placeholder="选择上级部门 (级联)"
+                />
+              </div>
             </el-form-item>
           </el-col>
         </el-row>
@@ -176,6 +198,12 @@ export default {
       deptList: [],
       // 部门树选项
       deptOptions: [],
+      // 级联部门选项
+      cascaderOptions: [],
+      // 是否使用级联选择
+      useCascader: false,
+      // 级联属性
+      cascaderProps: { checkStrictly: true, emitPath: false, value: 'deptId', label: 'deptName', children: 'children' },
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -280,6 +308,7 @@ export default {
       this.title = "添加部门"
       listDept().then(response => {
         this.deptOptions = this.handleTree(response.data, "deptId")
+        this.cascaderOptions = this.deptOptions
       })
     },
     /** 展开/折叠操作 */
@@ -299,12 +328,18 @@ export default {
         this.title = "修改部门"
         listDeptExcludeChild(row.deptId).then(response => {
           this.deptOptions = this.handleTree(response.data, "deptId")
+          this.cascaderOptions = this.deptOptions
           if (this.deptOptions.length == 0) {
             const noResultsOptions = { deptId: this.form.parentId, deptName: this.form.parentName, children: [] }
             this.deptOptions.push(noResultsOptions)
+            this.cascaderOptions = this.deptOptions
           }
         })
       })
+    },
+    // 切换父级选择器
+    toggleParentSelector() {
+      this.useCascader = !this.useCascader
     },
     /** 提交按钮 */
     submitForm: function() {
@@ -338,3 +373,16 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.parent-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.selector-toggle {
+  display: flex;
+  justify-content: flex-end;
+}
+</style>
