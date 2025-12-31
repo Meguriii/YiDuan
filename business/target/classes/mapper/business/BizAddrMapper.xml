@@ -98,4 +98,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{addrId}
         </foreach>
     </delete>
+
+    <update id="updateOthersToOne" parameterType="String">
+        UPDATE biz_addr
+        SET is_default = 1
+        WHERE client_id = #{clientId}
+        AND addr_id != #{addrId}
+    </update>
 </mapper>

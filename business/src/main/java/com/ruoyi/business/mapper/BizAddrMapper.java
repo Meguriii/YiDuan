@@ -2,6 +2,7 @@ package com.ruoyi.business.mapper;
 
 import java.util.List;
 import com.ruoyi.business.domain.BizAddr;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 用户地址簿Mapper接口
@@ -58,4 +59,8 @@ public interface BizAddrMapper
      * @return 结果
      */
     public int deleteBizAddrByAddrIds(String[] addrIds);
+
+
+    public void updateOthersToOne(@Param("clientId") String clientId,
+                                  @Param("addrId") String addrId);
 }

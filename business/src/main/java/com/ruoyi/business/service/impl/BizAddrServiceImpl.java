@@ -64,6 +64,17 @@ public class BizAddrServiceImpl implements IBizAddrService
     @Override
     public int updateBizAddr(BizAddr bizAddr)
     {
+        Integer isDefault = bizAddr.getIsDefault();
+        if (isDefault == null || (isDefault != 0 && isDefault != 1)) {
+            throw new IllegalArgumentException("是否默认地址只能为 0 或 1");
+        }
+
+        // 只有当这条要设置为 0 时才处理
+        if (isDefault == 0) {
+            // 假设按 userId 维度唯一，你自己换成对应字段
+            bizAddrMapper.updateOthersToOne(bizAddr.getClientId(), bizAddr.getAddrId());
+        }
+
         return bizAddrMapper.updateBizAddr(bizAddr);
     }
 
