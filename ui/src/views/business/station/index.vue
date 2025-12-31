@@ -41,6 +41,14 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="驿站名称" prop="stationName">
+        <el-input
+          v-model="queryParams.stationName"
+          placeholder="请输入驿站名称"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item label="负责人ID" prop="contactUserId">
         <el-input
           v-model="queryParams.contactUserId"
@@ -133,7 +141,10 @@
       <el-table-column label="市" align="center" prop="stationCity" />
       <el-table-column label="区县" align="center" prop="stationDist" />
       <el-table-column label="详细地址" align="center" prop="stationAddr" />
-      <el-table-column label="负责人ID" align="center" prop="contactUserId" />
+      <el-table-column label="驿站名称" align="center" prop="stationName" />
+<!--      <el-table-column label="负责人ID" align="center" prop="contactUserId" />-->
+      <el-table-column label="负责人姓名" align="center" prop="contactUserName" />
+      <el-table-column label="联系电话" align="center" prop="tel" />
       <el-table-column label="驿站状态" align="center" prop="status">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status === '待审核'" type="warning">待审核</el-tag>
@@ -141,7 +152,6 @@
           <el-tag v-else type="danger">停用</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="联系电话" align="center" prop="tel" />
       <el-table-column label="创建时间" align="center" prop="createdAt" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createdAt, '{y}-{m}-{d}') }}</span>
@@ -206,28 +216,34 @@
         <el-form-item label="详细地址" prop="stationAddr">
           <el-input v-model="form.stationAddr" placeholder="请输入详细地址" />
         </el-form-item>
+        <el-form-item label="驿站名称" prop="stationName">
+          <el-input v-model="form.stationName" placeholder="请输入驿站名称" />
+        </el-form-item>
         <el-form-item label="负责人ID" prop="contactUserId">
           <el-input v-model="form.contactUserId" placeholder="请输入负责人ID" />
         </el-form-item>
         <el-form-item label="联系电话" prop="tel">
           <el-input v-model="form.tel" placeholder="请输入联系电话" />
         </el-form-item>
-        <el-form-item label="创建时间" prop="createdAt">
-          <el-date-picker clearable
-            v-model="form.createdAt"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="请选择创建时间">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="更新时间" prop="updatedAt">
-          <el-date-picker clearable
-            v-model="form.updatedAt"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="请选择更新时间">
-          </el-date-picker>
-        </el-form-item>
+<!--        <el-form-item label="状态" prop="status">-->
+<!--          <el-switch v-model="form.status" :active-value='1' :inactive-value='0'></el-switch>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="创建时间" prop="createdAt">-->
+<!--          <el-date-picker clearable-->
+<!--            v-model="form.createdAt"-->
+<!--            type="date"-->
+<!--            value-format="yyyy-MM-dd"-->
+<!--            placeholder="请选择创建时间">-->
+<!--          </el-date-picker>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="更新时间" prop="updatedAt">-->
+<!--          <el-date-picker clearable-->
+<!--            v-model="form.updatedAt"-->
+<!--            type="date"-->
+<!--            value-format="yyyy-MM-dd"-->
+<!--            placeholder="请选择更新时间">-->
+<!--          </el-date-picker>-->
+<!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -240,6 +256,9 @@
       <el-form ref="auditForm" :model="auditForm" :rules="auditRules" label-width="100px">
         <el-form-item label="驿站名称">
           <el-input v-model="auditForm.stationName" :disabled="true" />
+        </el-form-item>
+        <el-form-item label="驿站地址">
+          <el-input :value="`${auditForm.stationProv||''}${auditForm.stationCity||''}${auditForm.stationDist||''}${auditForm.stationAddr||''}`" :disabled="true" />
         </el-form-item>
         <el-form-item label="选择部门" prop="parentDeptId">
           <treeselect
@@ -308,6 +327,7 @@ export default {
         stationCity: null,
         stationDist: null,
         stationAddr: null,
+        stationName: null,
         contactUserId: null,
         status: null,
         tel: null,
@@ -316,6 +336,8 @@ export default {
       },
       // 表单参数
       form: {},
+      // 联系人姓名
+      contactUserName: '',
       // 表单校验
       rules: {
         deptId: [
@@ -332,6 +354,9 @@ export default {
         ],
         stationAddr: [
           { required: true, message: "详细地址不能为空", trigger: "blur" }
+        ],
+        stationName: [
+          { required: true, message: "驿站名称不能为空", trigger: "blur" }
         ],
         status: [
           { required: true, message: "驿站状态不能为空", trigger: "change" }
@@ -351,6 +376,13 @@ export default {
         status: [
           { required: true, message: "请选择审核状态", trigger: "change" }
         ]
+      },
+      watch: {
+        'form.contactUserId': function(newVal, oldVal) {
+          if (newVal !== oldVal) {
+            this.updateContactUserName();
+          }
+        }
       }
     }
   },
@@ -382,12 +414,14 @@ export default {
         stationCity: null,
         stationDist: null,
         stationAddr: null,
+        stationName: null,
         contactUserId: null,
         status: null,
         tel: null,
         createdAt: null,
         updatedAt: null
       }
+      this.contactUserName = '';
       this.resetForm("form")
     },
     /** 搜索按钮操作 */
@@ -420,7 +454,44 @@ export default {
         this.form = response.data
         this.open = true
         this.title = "修改驿站信息"
+        this.updateContactUserName()
       })
+    },
+    /** 更新联系人姓名 */
+    updateContactUserName() {
+      if (this.form.contactUserId) {
+        this.getUserInfo(this.form.contactUserId).then(userName => {
+          this.contactUserName = userName || '未找到用户';
+        }).catch(() => {
+          this.contactUserName = '获取失败';
+        });
+      } else {
+        this.contactUserName = '';
+      }
+    },
+    /** 获取用户信息 */
+    getUserInfo(userId) {
+      return new Promise((resolve, reject) => {
+        if (!userId) {
+          resolve('');
+          return;
+        }
+        import('@/api/system/user').then(module => {
+          module.getUser(userId).then(response => {
+            if (response && response.data && response.data.nickName) {
+              resolve(response.data.nickName);
+            } else if (response && response.data && response.data.userName) {
+              resolve(response.data.userName);
+            } else {
+              resolve('');
+            }
+          }).catch(error => {
+            reject(error);
+          });
+        }).catch(error => {
+          reject(error);
+        });
+      });
     },
     /** 提交按钮 */
     submitForm() {
@@ -480,6 +551,10 @@ export default {
       this.auditForm = {
         stationId: row.stationId,
         stationName: row.stationName,
+        stationProv: row.stationProv,
+        stationCity: row.stationCity,
+        stationDist: row.stationDist,
+        stationAddr: row.stationAddr,
         parentDeptId: null,
         status: "正常"
       }

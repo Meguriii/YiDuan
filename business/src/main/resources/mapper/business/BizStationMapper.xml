@@ -13,6 +13,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="stationDist"    column="station_dist"    />
         <result property="stationAddr"    column="station_addr"    />
         <result property="contactUserId"    column="contact_user_id"    />
+        <result property="contactUserName"    column="contact_user_name"    />
         <result property="status"    column="status"    />
         <result property="tel"    column="tel"    />
         <result property="createdAt"    column="created_at"    />
@@ -20,7 +21,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectBizStationVo">
-        select station_id, station_name, dept_id, station_prov, station_city, station_dist, station_addr, contact_user_id, status, tel, created_at, updated_at from biz_station
+        select bs.station_id, bs.station_name, bs.dept_id, bs.station_prov, bs.station_city, bs.station_dist, bs.station_addr, bs.contact_user_id, u.nick_name as contact_user_name, bs.status, bs.tel, bs.created_at, bs.updated_at from biz_station bs
+        left join sys_user u on bs.contact_user_id = u.user_id
     </sql>
 
     <select id="selectBizStationList" parameterType="BizStation" resultMap="BizStationResult">
@@ -41,8 +43,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
     
     <select id="selectBizStationByStationId" parameterType="String" resultMap="BizStationResult">
-        <include refid="selectBizStationVo"/>
-        where station_id = #{stationId}
+        select bs.station_id, bs.station_name, bs.dept_id, bs.station_prov, bs.station_city, bs.station_dist, bs.station_addr, bs.contact_user_id, u.nick_name as contact_user_name, bs.status, bs.tel, bs.created_at, bs.updated_at from biz_station bs
+        left join sys_user u on bs.contact_user_id = u.user_id
+        where bs.station_id = #{stationId}
     </select>
 
     <insert id="insertBizStation" parameterType="BizStation" useGeneratedKeys="true" keyProperty="stationId">

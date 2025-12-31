@@ -301,89 +301,144 @@
 
     <!-- 添加或修改包裹表对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
-      <el-descriptions :column="6" border>
-<!--      <el-descriptions ref="form" :model="form" :rules="rules" label-width="80px">-->
-        <el-descriptions-item label="寄件地址" prop="senderAddr":span="6">
-          <el-select
-            v-model="senderAddrSelected"
-            placeholder="请选择地址或手动输入"
-            filterable
-            allow-create
-            @change="handleSenderAddrChange"
-            style="width: 100%">
-            <el-option
-              v-for="addr in addrList"
-              :key="addr.addrId"
-              :label="addr.addrProv + addr.addrCity + addr.addrDist + addr.addrDetail"
-              :value="addr.addrId">
-            </el-option>
-          </el-select>
-        </el-descriptions-item>
-        <el-descriptions-item label="寄件省" prop="senderProv":span="3">
-          <el-input v-model="form.senderProv" placeholder="请输入寄件省" />
-        </el-descriptions-item>
-        <el-descriptions-item label="寄件市" prop="senderCity":span="3">
-          <el-input v-model="form.senderCity" placeholder="请输入寄件市" />
-        </el-descriptions-item>
-        <el-descriptions-item label="寄件区县" prop="senderDist":span="3">
-          <el-input v-model="form.senderDist" placeholder="请输入寄件区县" />
-        </el-descriptions-item>
-        <el-descriptions-item label="寄件详细地址" prop="senderAddrDetail":span="3">
-          <el-input v-model="form.senderAddrDetail" placeholder="请输入寄件详细地址" />
-        </el-descriptions-item>
-        <el-descriptions-item label="收件地址" prop="receiverAddr":span="6">
-          <el-select
-            v-model="receiverAddrSelected"
-            placeholder="请选择地址或手动输入"
-            filterable
-            allow-create
-            @change="handleReceiverAddrChange"
-            style="width: 100%">
-            <el-option
-              v-for="addr in addrList"
-              :key="addr.addrId"
-              :label="addr.addrProv + addr.addrCity + addr.addrDist + addr.addrDetail"
-              :value="addr.addrId">
-            </el-option>
-          </el-select>
-        </el-descriptions-item>
-        <el-descriptions-item label="收件姓名" prop="receiverName":span="3">
-          <el-input v-model="form.receiverName" placeholder="请输入收件人姓名" />
-        </el-descriptions-item>
-        <el-descriptions-item label="收件手机" prop="receiverTel":span="3">
-          <el-input v-model="form.receiverTel" placeholder="请输入收件人手机号" />
-        </el-descriptions-item>
-        <el-descriptions-item label="收件省" prop="receiverProv":span="3">
-          <el-input v-model="form.receiverProv" placeholder="请输入收件省" />
-        </el-descriptions-item>
-        <el-descriptions-item label="收件市" prop="receiverCity":span="3">
-          <el-input v-model="form.receiverCity" placeholder="请输入收件市" />
-        </el-descriptions-item>
-        <el-descriptions-item label="收件区县" prop="receiverDist":span="3">
-          <el-input v-model="form.receiverDist" placeholder="请输入收件区县" />
-        </el-descriptions-item>
-        <el-descriptions-item label="收件详细地址" prop="receiverAddrDetail":span="3">
-          <el-input v-model="form.receiverAddrDetail" placeholder="请输入收件详细地址" />
-        </el-descriptions-item>
-        <el-descriptions-item label="重量" prop="weight":span="3">
-          <el-input v-model="form.weight" placeholder="请输入重量" />
-        </el-descriptions-item>
-        <el-descriptions-item label="体积" prop="volume":span="3">
-          <el-input v-model="form.volume" placeholder="请输入体积" />
-        </el-descriptions-item>
-        <el-descriptions-item label="备注" prop="note":span="6">
-          <el-input v-model="form.note" type="textarea" placeholder="请输入内容" />
-        </el-descriptions-item>
-        <el-descriptions-item label="是否危险" prop="isDangerous":span="2" >
-          <el-switch v-model="form.isDangerous" :active-value='1' :inactive-value='0'></el-switch>
-        </el-descriptions-item>
-        <el-descriptions-item label="是否易碎" prop="isFragile":span="2" >
-          <el-switch v-model="form.isFragile" :active-value='1' :inactive-value='0'></el-switch>
-        </el-descriptions-item>
-        <el-descriptions-item label="是否加急" prop="isUrgent":span="2" >
-          <el-switch v-model="form.isUrgent" :active-value='1' :inactive-value='0'></el-switch>
-        </el-descriptions-item>
-      </el-descriptions>
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="寄件地址" prop="senderAddr">
+              <el-select
+                v-model="senderAddrSelected"
+                placeholder="请选择地址或手动输入"
+                filterable
+                allow-create
+                @change="handleSenderAddrChange"
+                style="width: 100%">
+                <el-option
+                  v-for="addr in addrList"
+                  :key="addr.addrId"
+                  :label="addr.addrProv + addr.addrCity + addr.addrDist + addr.addrDetail"
+                  :value="addr.addrId">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="寄件省" prop="senderProv">
+              <el-input v-model="form.senderProv" placeholder="请输入寄件省" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="寄件市" prop="senderCity">
+              <el-input v-model="form.senderCity" placeholder="请输入寄件市" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="寄件区县" prop="senderDist">
+              <el-input v-model="form.senderDist" placeholder="请输入寄件区县" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="寄件地址" prop="senderAddrDetail">
+              <el-input v-model="form.senderAddrDetail" placeholder="请输入寄件详细地址" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="收件地址" prop="receiverAddr">
+              <el-select
+                v-model="receiverAddrSelected"
+                placeholder="请选择地址或手动输入"
+                filterable
+                allow-create
+                @change="handleReceiverAddrChange"
+                style="width: 100%">
+                <el-option
+                  v-for="addr in addrList"
+                  :key="addr.addrId"
+                  :label="addr.addrProv + addr.addrCity + addr.addrDist + addr.addrDetail"
+                  :value="addr.addrId">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="收件姓名" prop="receiverName">
+              <el-input v-model="form.receiverName" placeholder="请输入收件人姓名" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="收件手机" prop="receiverTel">
+              <el-input v-model="form.receiverTel" placeholder="请输入收件人手机号" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="收件省" prop="receiverProv">
+              <el-input v-model="form.receiverProv" placeholder="请输入收件省" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="收件市" prop="receiverCity">
+              <el-input v-model="form.receiverCity" placeholder="请输入收件市" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="收件区县" prop="receiverDist">
+              <el-input v-model="form.receiverDist" placeholder="请输入收件区县" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="收件地址" prop="receiverAddrDetail">
+              <el-input v-model="form.receiverAddrDetail" placeholder="请输入收件详细地址" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="重量" prop="weight">
+              <el-input v-model="form.weight" placeholder="请输入重量" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="体积" prop="volume">
+              <el-input v-model="form.volume" placeholder="请输入体积" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="24">
+            <el-form-item label="备注" prop="note">
+              <el-input v-model="form.note" type="textarea" placeholder="请输入内容" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <el-form-item label="是否危险" prop="isDangerous">
+              <el-switch v-model="form.isDangerous" :active-value='1' :inactive-value='0'></el-switch>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="是否易碎" prop="isFragile">
+              <el-switch v-model="form.isFragile" :active-value='1' :inactive-value='0'></el-switch>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="是否加急" prop="isUrgent">
+              <el-switch v-model="form.isUrgent" :active-value='1' :inactive-value='0'></el-switch>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>

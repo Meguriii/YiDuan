@@ -66,6 +66,10 @@ public class BizStation extends BaseEntity
     @Excel(name = "驿站名称")
     private String stationName;
 
+    /** 负责人姓名 */
+    @Excel(name = "负责人姓名")
+    private String contactUserName;
+
     public void setStationId(String stationId) 
     {
         this.stationId = stationId;
@@ -184,6 +188,16 @@ public class BizStation extends BaseEntity
     public String getStationName() 
     {
         return stationName;
+    }
+
+    public void setContactUserName(String contactUserName) 
+    {
+        this.contactUserName = contactUserName;
+    }
+
+    public String getContactUserName() 
+    {
+        return contactUserName;
     }
 
     @Override
