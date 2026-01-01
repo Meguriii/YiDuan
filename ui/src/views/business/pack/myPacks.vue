@@ -172,19 +172,27 @@ export default {
     };
   },
   created() {
-    // 获取当前用户的clientId，这里需要根据实际情况获取
+    // 获取当前用户的userId，这里需要根据实际情况获取
     // 假设从vuex或localStorage获取
-    this.clientId = this.$store.getters.userId || 1;
-    this.getList();
+    this.userId = this.$store.getters.userId;
+    if (this.userId) {
+      this.getList();
+    } else {
+      this.$modal.msgError("获取用户信息失败");
+    }
   },
   methods: {
     /** 查询包裹列表 */
     getList() {
       this.loading = true;
-      getMyPacks(this.clientId).then(response => {
+      getMyPacks(this.userId).then(response => {
         this.packList = response.rows;
         this.total = response.total;
         this.loading = false;
+      }).catch(error => {
+        this.loading = false;
+        this.$modal.msgError("获取包裹列表失败");
+        console.error(error);
       });
     },
     /** 搜索按钮操作 */

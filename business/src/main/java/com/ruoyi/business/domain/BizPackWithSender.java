@@ -21,9 +21,9 @@ public class BizPackWithSender extends BaseEntity
     /** 包裹ID */
     private String packId;
 
-    /** 寄件用户(biz_client) */
-    @Excel(name = "寄件用户(biz_client)")
-    private String senderId;
+    /** 寄件用户(sys_user) */
+    @Excel(name = "寄件用户(sys_user)")
+    private Long senderId;
 
     /** 寄件人姓名 */
     @Excel(name = "寄件人姓名")
@@ -51,7 +51,7 @@ public class BizPackWithSender extends BaseEntity
 
     /** 收件用户ID，可为空 */
     @Excel(name = "收件用户ID，可为空")
-    private String receiverId;
+    private Long receiverId;
 
     /** 收件人姓名 */
     @Excel(name = "收件人姓名")
@@ -129,12 +129,12 @@ public class BizPackWithSender extends BaseEntity
         return packId;
     }
 
-    public void setSenderId(String senderId) 
+    public void setSenderId(Long senderId) 
     {
         this.senderId = senderId;
     }
 
-    public String getSenderId() 
+    public Long getSenderId() 
     {
         return senderId;
     }
@@ -199,12 +199,12 @@ public class BizPackWithSender extends BaseEntity
         return senderAddrDetail;
     }
 
-    public void setReceiverId(String receiverId) 
+    public void setReceiverId(Long receiverId) 
     {
         this.receiverId = receiverId;
     }
 
-    public String getReceiverId() 
+    public Long getReceiverId() 
     {
         return receiverId;
     }

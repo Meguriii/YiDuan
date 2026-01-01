@@ -1,11 +1,14 @@
 package com.ruoyi.business.service.impl;
 
 import java.util.List;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.business.mapper.BizPackMapper;
+import com.ruoyi.business.mapper.BizAddrMapper;
 import com.ruoyi.business.domain.BizPack;
 import com.ruoyi.business.domain.BizPackWithSender;
+import com.ruoyi.business.domain.BizAddr;
 import com.ruoyi.business.service.IBizPackService;
 import com.ruoyi.common.utils.SecurityUtils;
 
@@ -67,9 +70,9 @@ public class BizPackServiceImpl implements IBizPackService
     public int insertBizPack(BizPack bizPack)
     {
         // 如果前端没有传递senderId,则使用当前登录用户的ID
-        if (bizPack.getSenderId() == null || bizPack.getSenderId().isEmpty()) {
+        if (bizPack.getSenderId() == null) {
             Long userId = SecurityUtils.getUserId();
-            bizPack.setSenderId(String.valueOf(userId));
+            bizPack.setSenderId(userId);
         }
         return bizPackMapper.insertBizPack(bizPack);
     }

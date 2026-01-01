@@ -128,7 +128,7 @@
     <el-table v-loading="loading" :data="addrList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="地址ID" align="center" prop="addrId" />
-      <el-table-column label="所属用户" align="center" prop="clientId" />
+      <el-table-column label="所属用户" align="center" prop="userId" />
       <el-table-column label="姓名" align="center" prop="addrName" />
       <el-table-column label="电话" align="center" prop="addrTel" />
       <el-table-column label="省" align="center" prop="addrProv" />
@@ -252,7 +252,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        clientId: null,
+        userId: null,
         addrName: null,
         addrTel: null,
         addrProv: null,
@@ -267,8 +267,8 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        clientId: [
-          { required: true, message: "所属用户(biz_client)不能为空", trigger: "blur" }
+        userId: [
+          { required: true, message: "所属用户不能为空", trigger: "blur" }
         ],
         addrName: [
           { required: true, message: "姓名不能为空", trigger: "blur" }

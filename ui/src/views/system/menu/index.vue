@@ -108,30 +108,15 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="上级菜单" prop="parentId">
-              <div class="parent-selector">
-                <div class="selector-toggle">
-                  <el-link type="primary" @click="toggleParentSelector">
-                    {{ useCascader ? '切换树选择' : '切换级联选择' }}
-                  </el-link>
-                </div>
-                <treeselect
-                  v-if="!useCascader"
-                  v-model="form.parentId"
-                  :options="menuOptions"
-                  :normalizer="normalizer"
-                  :show-count="true"
-                  placeholder="选择上级菜单"
-                />
-                <el-cascader
-                  v-else
-                  v-model="form.parentId"
-                  :options="cascaderOptions"
-                  :props="cascaderProps"
-                  clearable
-                  filterable
-                  placeholder="选择上级菜单 (级联)"
-                />
-              </div>
+              <el-cascader
+                v-model="form.parentId"
+                :options="cascaderOptions"
+                :props="cascaderProps"
+                clearable
+                filterable
+                placeholder="选择上级菜单"
+                style="width: 100%;"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -317,14 +302,12 @@
 
 <script>
 import { listMenu, getMenu, delMenu, addMenu, updateMenu } from "@/api/system/menu"
-import Treeselect from "@riophae/vue-treeselect"
-import "@riophae/vue-treeselect/dist/vue-treeselect.css"
 import IconSelect from "@/components/IconSelect"
 
 export default {
   name: "Menu",
   dicts: ['sys_show_hide', 'sys_normal_disable'],
-  components: { Treeselect, IconSelect },
+  components: { IconSelect },
   data() {
     return {
       // 遮罩层
@@ -333,12 +316,8 @@ export default {
       showSearch: true,
       // 菜单表格树数据
       menuList: [],
-      // 菜单树选项
-      menuOptions: [],
       // 级联菜单选项
       cascaderOptions: [],
-      // 是否使用级联选择
-      useCascader: false,
       // 级联属性
       cascaderProps: { checkStrictly: true, emitPath: false, value: 'menuId', label: 'menuName', children: 'children' },
       // 弹出层标题
@@ -386,31 +365,14 @@ export default {
         this.loading = false
       })
     },
-    /** 转换菜单数据结构 */
-    normalizer(node) {
-      if (node.children && !node.children.length) {
-        delete node.children
-      }
-      return {
-        id: node.menuId,
-        label: node.menuName,
-        children: node.children
-      }
-    },
     /** 查询菜单下拉树结构 */
     getTreeselect() {
       listMenu().then(response => {
-        this.menuOptions = []
+        this.cascaderOptions = []
         const menu = { menuId: 0, menuName: '主类目', children: [] }
         menu.children = this.handleTree(response.data, "menuId")
-        this.menuOptions.push(menu)
-        // 级联菜单数据与树保持一致
-        this.cascaderOptions = [menu]
+        this.cascaderOptions.push(menu)
       })
-    },
-    // 切换父级选择器
-    toggleParentSelector() {
-      this.useCascader = !this.useCascader
     },
     // 取消按钮
     cancel() {

@@ -275,12 +275,12 @@ public class BizPackController extends BaseController
     /**
      * 查询用户相关包裹 - 用户功能
      */
-    @GetMapping("/myPacks/{clientId}")
-    public TableDataInfo getMyPacks(@PathVariable String clientId)
+    @GetMapping("/myPacks/{userId}")
+    public TableDataInfo getMyPacks(@PathVariable Long userId)
     {
         startPage();
         BizPack query = new BizPack();
-        query.setSenderId(clientId);
+        query.setSenderId(userId);
         List<BizPack> list = bizPackService.selectBizPackList(query);
         return getDataTable(list);
     }

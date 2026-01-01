@@ -122,9 +122,9 @@ export function updatePackStatus(packId, data) {
 }
 
 // 查询用户相关包裹
-export function getMyPacks(clientId) {
+export function getMyPacks(userId) {
   return request({
-    url: '/business/pack/myPacks/' + clientId,
+    url: '/business/pack/myPacks/' + userId,
     method: 'get'
   })
 }

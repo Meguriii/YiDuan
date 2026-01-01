@@ -20,9 +20,9 @@ public class BizAddr extends BaseEntity
     /** 地址ID */
     private String addrId;
 
-    /** 所属用户(biz_client) */
-    @Excel(name = "所属用户(biz_client)")
-    private String clientId;
+    /** 所属用户 */
+    @Excel(name = "所属用户")
+    private Long userId;
 
     /** 姓名 */
     @Excel(name = "姓名")
@@ -72,14 +72,14 @@ public class BizAddr extends BaseEntity
         return addrId;
     }
 
-    public void setClientId(String clientId) 
+    public void setUserId(Long userId) 
     {
-        this.clientId = clientId;
+        this.userId = userId;
     }
 
-    public String getClientId() 
+    public Long getUserId() 
     {
-        return clientId;
+        return userId;
     }
 
     public void setAddrName(String addrName) 
@@ -176,7 +176,7 @@ public class BizAddr extends BaseEntity
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("addrId", getAddrId())
-            .append("clientId", getClientId())
+            .append("userId", getUserId())
             .append("addrName", getAddrName())
             .append("addrTel", getAddrTel())
             .append("addrProv", getAddrProv())

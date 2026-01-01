@@ -102,29 +102,15 @@
         <el-row>
           <el-col :span="24" v-if="form.parentId !== 0">
             <el-form-item label="上级部门" prop="parentId">
-              <div class="parent-selector">
-                <div class="selector-toggle">
-                  <el-link type="primary" @click="toggleParentSelector">
-                    {{ useCascader ? '切换树选择' : '切换级联选择' }}
-                  </el-link>
-                </div>
-                <treeselect
-                  v-if="!useCascader"
-                  v-model="form.parentId"
-                  :options="deptOptions"
-                  :normalizer="normalizer"
-                  placeholder="选择上级部门"
-                />
-                <el-cascader
-                  v-else
-                  v-model="form.parentId"
-                  :options="cascaderOptions"
-                  :props="cascaderProps"
-                  clearable
-                  filterable
-                  placeholder="选择上级部门 (级联)"
-                />
-              </div>
+              <el-cascader
+                v-model="form.parentId"
+                :options="cascaderOptions"
+                :props="cascaderProps"
+                clearable
+                filterable
+                placeholder="选择上级部门 "
+                style="width: 100%;"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -181,13 +167,10 @@
 
 <script>
 import { listDept, getDept, delDept, addDept, updateDept, listDeptExcludeChild } from "@/api/system/dept"
-import Treeselect from "@riophae/vue-treeselect"
-import "@riophae/vue-treeselect/dist/vue-treeselect.css"
 
 export default {
   name: "Dept",
   dicts: ['sys_normal_disable'],
-  components: { Treeselect },
   data() {
     return {
       // 遮罩层
@@ -196,12 +179,8 @@ export default {
       showSearch: true,
       // 表格树数据
       deptList: [],
-      // 部门树选项
-      deptOptions: [],
       // 级联部门选项
       cascaderOptions: [],
-      // 是否使用级联选择
-      useCascader: false,
       // 级联属性
       cascaderProps: { checkStrictly: true, emitPath: false, value: 'deptId', label: 'deptName', children: 'children' },
       // 弹出层标题
@@ -259,17 +238,6 @@ export default {
         this.loading = false
       })
     },
-    /** 转换部门数据结构 */
-    normalizer(node) {
-      if (node.children && !node.children.length) {
-        delete node.children
-      }
-      return {
-        id: node.deptId,
-        label: node.deptName,
-        children: node.children
-      }
-    },
     // 取消按钮
     cancel() {
       this.open = false
@@ -307,8 +275,7 @@ export default {
       this.open = true
       this.title = "添加部门"
       listDept().then(response => {
-        this.deptOptions = this.handleTree(response.data, "deptId")
-        this.cascaderOptions = this.deptOptions
+        this.cascaderOptions = this.handleTree(response.data, "deptId")
       })
     },
     /** 展开/折叠操作 */
@@ -327,19 +294,13 @@ export default {
         this.open = true
         this.title = "修改部门"
         listDeptExcludeChild(row.deptId).then(response => {
-          this.deptOptions = this.handleTree(response.data, "deptId")
-          this.cascaderOptions = this.deptOptions
-          if (this.deptOptions.length == 0) {
+          this.cascaderOptions = this.handleTree(response.data, "deptId")
+          if (this.cascaderOptions.length == 0) {
             const noResultsOptions = { deptId: this.form.parentId, deptName: this.form.parentName, children: [] }
-            this.deptOptions.push(noResultsOptions)
-            this.cascaderOptions = this.deptOptions
+            this.cascaderOptions.push(noResultsOptions)
           }
         })
       })
-    },
-    // 切换父级选择器
-    toggleParentSelector() {
-      this.useCascader = !this.useCascader
     },
     /** 提交按钮 */
     submitForm: function() {

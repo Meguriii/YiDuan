@@ -33,8 +33,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap type="BizPackWithSender" id="BizPackWithSenderResult">
         <result property="packId"    column="pack_id"    />
         <result property="senderId"    column="sender_id"    />
-        <result property="senderName"    column="client_name"    />
-        <result property="senderTel"    column="client_tel"    />
+        <result property="senderName"    column="nick_name"    />
+        <result property="senderTel"    column="phonenumber"    />
         <result property="senderProv"    column="sender_prov"    />
         <result property="senderCity"    column="sender_city"    />
         <result property="senderDist"    column="sender_dist"    />
@@ -65,12 +65,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectBizPackList" parameterType="BizPack" resultMap="BizPackResult">
         <include refid="selectBizPackVo"/>
         <where>  
-            <if test="senderId != null  and senderId != ''"> and sender_id = #{senderId}</if>
+            <if test="senderId != null "> and sender_id = #{senderId}</if>
             <if test="senderProv != null  and senderProv != ''"> and sender_prov = #{senderProv}</if>
             <if test="senderCity != null  and senderCity != ''"> and sender_city = #{senderCity}</if>
             <if test="senderDist != null  and senderDist != ''"> and sender_dist = #{senderDist}</if>
             <if test="senderAddrDetail != null  and senderAddrDetail != ''"> and sender_addr_detail = #{senderAddrDetail}</if>
-            <if test="receiverId != null  and receiverId != ''"> and receiver_id = #{receiverId}</if>
+            <if test="receiverId != null "> and receiver_id = #{receiverId}</if>
             <if test="receiverName != null  and receiverName != ''"> and receiver_name like concat('%', #{receiverName}, '%')</if>
             <if test="receiverTel != null  and receiverTel != ''"> and receiver_tel = #{receiverTel}</if>
             <if test="receiverProv != null  and receiverProv != ''"> and receiver_prov = #{receiverProv}</if>
@@ -94,8 +94,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select 
             bp.pack_id, 
             bp.sender_id, 
-            bc.client_name,
-            bc.client_tel,
+            su.nick_name,
+            su.phonenumber,
             bp.sender_prov, 
             bp.sender_city, 
             bp.sender_dist, 
@@ -118,14 +118,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             bp.created_at, 
             bp.updated_at 
         from biz_pack bp
-        left join biz_client bc on bp.sender_id = bc.client_id
+        left join sys_user su on bp.sender_id = su.user_id
         <where>  
-            <if test="senderId != null  and senderId != ''"> and bp.sender_id = #{senderId}</if>
+            <if test="senderId != null "> and bp.sender_id = #{senderId}</if>
             <if test="senderProv != null  and senderProv != ''"> and bp.sender_prov = #{senderProv}</if>
             <if test="senderCity != null  and senderCity != ''"> and bp.sender_city = #{senderCity}</if>
             <if test="senderDist != null  and senderDist != ''"> and bp.sender_dist = #{senderDist}</if>
             <if test="senderAddrDetail != null  and senderAddrDetail != ''"> and bp.sender_addr_detail = #{senderAddrDetail}</if>
-            <if test="receiverId != null  and receiverId != ''"> and bp.receiver_id = #{receiverId}</if>
+            <if test="receiverId != null "> and bp.receiver_id = #{receiverId}</if>
             <if test="receiverName != null  and receiverName != ''"> and bp.receiver_name like concat('%', #{receiverName}, '%')</if>
             <if test="receiverTel != null  and receiverTel != ''"> and bp.receiver_tel = #{receiverTel}</if>
             <if test="receiverProv != null  and receiverProv != ''"> and bp.receiver_prov = #{receiverProv}</if>
@@ -154,8 +154,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select 
             bp.pack_id, 
             bp.sender_id, 
-            bc.client_name,
-            bc.client_tel,
+            su.nick_name,
+            su.phonenumber,
             bp.sender_prov, 
             bp.sender_city, 
             bp.sender_dist, 
@@ -178,14 +178,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             bp.created_at, 
             bp.updated_at 
         from biz_pack bp
-        left join biz_client bc on bp.sender_id = bc.client_id
+        left join sys_user su on bp.sender_id = su.user_id
         where bp.pack_id = #{packId}
     </select>
 
     <insert id="insertBizPack" parameterType="BizPack" useGeneratedKeys="true" keyProperty="packId">
         insert into biz_pack
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="senderId != null and senderId != ''">sender_id,</if>
+            <if test="senderId != null">sender_id,</if>
             <if test="senderProv != null and senderProv != ''">sender_prov,</if>
             <if test="senderCity != null and senderCity != ''">sender_city,</if>
             <if test="senderDist != null and senderDist != ''">sender_dist,</if>
@@ -209,7 +209,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updatedAt != null">updated_at,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="senderId != null and senderId != ''">#{senderId},</if>
+            <if test="senderId != null">#{senderId},</if>
             <if test="senderProv != null and senderProv != ''">#{senderProv},</if>
             <if test="senderCity != null and senderCity != ''">#{senderCity},</if>
             <if test="senderDist != null and senderDist != ''">#{senderDist},</if>
@@ -237,7 +237,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <update id="updateBizPack" parameterType="BizPack">
         update biz_pack
         <trim prefix="SET" suffixOverrides=",">
-            <if test="senderId != null and senderId != ''">sender_id = #{senderId},</if>
+            <if test="senderId != null">sender_id = #{senderId},</if>
             <if test="senderProv != null and senderProv != ''">sender_prov = #{senderProv},</if>
             <if test="senderCity != null and senderCity != ''">sender_city = #{senderCity},</if>
             <if test="senderDist != null and senderDist != ''">sender_dist = #{senderDist},</if>

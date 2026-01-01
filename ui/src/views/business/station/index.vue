@@ -136,7 +136,7 @@
     <el-table v-loading="loading" :data="stationList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="驿站ID" align="center" prop="stationId" />
-      <el-table-column label="部门ID" align="center" prop="deptId" />
+<!--      <el-table-column label="部门ID" align="center" prop="deptId" />-->
       <el-table-column label="省" align="center" prop="stationProv" />
       <el-table-column label="市" align="center" prop="stationCity" />
       <el-table-column label="区县" align="center" prop="stationDist" />
@@ -162,7 +162,7 @@
           <span>{{ parseTime(scope.row.updatedAt, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="100">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150">
         <template slot-scope="scope">
           <el-button
             v-if="scope.row.status === '待审核'"

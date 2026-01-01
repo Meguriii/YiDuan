@@ -61,6 +61,6 @@ public interface BizAddrMapper
     public int deleteBizAddrByAddrIds(String[] addrIds);
 
 
-    public void updateOthersToOne(@Param("clientId") String clientId,
+    public void updateOthersToOne(@Param("userId") Long userId,
                                   @Param("addrId") String addrId);
 }

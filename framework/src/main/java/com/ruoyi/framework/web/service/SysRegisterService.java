@@ -2,10 +2,12 @@ package com.ruoyi.framework.web.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.model.RegisterBody;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.user.CaptchaException;
@@ -16,9 +18,13 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
+import com.ruoyi.system.domain.SysPost;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.system.service.ISysRoleService;
+import com.ruoyi.system.service.ISysPostService;
+
+import java.util.List;
 
 /**
  * 注册校验方法
@@ -40,6 +46,10 @@ public class SysRegisterService
     // 添加角色服务依赖
     @Autowired
     private ISysRoleService roleService;
+    
+    // 添加岗位服务依赖
+    @Autowired
+    private ISysPostService postService;
 
     /**
      * 注册
@@ -100,6 +110,18 @@ public class SysRegisterService
                 AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.REGISTER, MessageUtils.message("user.register.success")));
             }
         }
+        return msg;
+    }
+
+    /**
+     * 新用户注册
+     */
+    @Transactional
+    public String registerUser(String user, String source)
+    {
+        String msg = "";
+        // 这里应该从字符串参数创建SysUser对象，但当前实现有误
+        // 需要修正为正确的方法签名
         return msg;
     }
 

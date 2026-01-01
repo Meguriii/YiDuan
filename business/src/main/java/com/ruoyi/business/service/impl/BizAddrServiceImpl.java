@@ -72,7 +72,7 @@ public class BizAddrServiceImpl implements IBizAddrService
         // 只有当这条要设置为 0 时才处理
         if (isDefault == 0) {
             // 假设按 userId 维度唯一，你自己换成对应字段
-            bizAddrMapper.updateOthersToOne(bizAddr.getClientId(), bizAddr.getAddrId());
+            bizAddrMapper.updateOthersToOne(bizAddr.getUserId(), bizAddr.getAddrId());
         }
 
         return bizAddrMapper.updateBizAddr(bizAddr);

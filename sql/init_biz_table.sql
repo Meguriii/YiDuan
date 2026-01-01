@@ -6,26 +6,7 @@ DROP TABLE IF EXISTS biz_pack;
 DROP TABLE IF EXISTS biz_addr;
 DROP TABLE IF EXISTS biz_station_admin_map;
 DROP TABLE IF EXISTS biz_station;
-DROP TABLE IF EXISTS biz_client;
 SET FOREIGN_KEY_CHECKS = 1;
-
-
-/* ===========================
-   表：biz_client（业务用户表）
-=========================== */
-DROP TABLE IF EXISTS biz_client;
-CREATE TABLE biz_client (
-                            client_id         BIGINT UNSIGNED     NOT NULL AUTO_INCREMENT COMMENT '业务用户ID',
-                            client_name       VARCHAR(64)         NOT NULL                COMMENT '用户姓名',
-                            client_tel        VARCHAR(20)         NOT NULL                COMMENT '手机号',
-                            client_status     ENUM('正常','冻结','注销')
-                                                                  NOT NULL DEFAULT '正常'  COMMENT '用户状态',
-                            created_at      DATETIME            NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                            updated_at      DATETIME            NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-
-                            PRIMARY KEY(client_id),
-                            UNIQUE KEY uk_client_tel(client_tel)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='业务用户表';
 
 
 /* ===========================
@@ -87,25 +68,24 @@ CREATE TABLE biz_station_admin_map (
 DROP TABLE IF EXISTS biz_addr;
 CREATE TABLE biz_addr (
                           addr_id         BIGINT UNSIGNED     NOT NULL AUTO_INCREMENT COMMENT '地址ID',
-                          client_id       BIGINT UNSIGNED     NOT NULL                COMMENT '所属用户(biz_client)',
+                          user_id         BIGINT              NOT NULL                COMMENT '所属用户',
                           addr_name       VARCHAR(64)         NOT NULL                COMMENT '姓名',
                           addr_tel        VARCHAR(20)         NOT NULL                COMMENT '电话',
                           addr_prov       VARCHAR(64)         NOT NULL                COMMENT '省',
                           addr_city       VARCHAR(64)         NOT NULL                COMMENT '市',
                           addr_dist       VARCHAR(64)         NOT NULL                COMMENT '区县',
                           addr_detail     VARCHAR(255)        NOT NULL                COMMENT '详细地址',
-                          is_default      TINYINT(1)          NOT NULL DEFAULT 0      COMMENT '是否默认地址',
+                          is_default      TINYINT(1)          NOT NULL DEFAULT 0      COMMENT '是否默认地址(0-否 1-是)',
                           created_at      DATETIME            NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                           updated_at      DATETIME            NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
 
                           PRIMARY KEY (addr_id),
-                          INDEX idx_addr_client (client_id),
+                          INDEX idx_addr_user(user_id),
 
-                          CONSTRAINT fk_addr_client
-                              FOREIGN KEY (client_id) REFERENCES biz_client(client_id)
-                                  ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户地址簿';
-
+                          CONSTRAINT fk_addr_user
+                              FOREIGN KEY (user_id) REFERENCES sys_user(user_id)
+                              ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户地址表';
 
 /* ===========================
    表：biz_pack（包裹）
@@ -114,13 +94,13 @@ DROP TABLE IF EXISTS biz_pack;
 CREATE TABLE biz_pack (
                           pack_id             BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '包裹ID',
 
-                          sender_id           BIGINT UNSIGNED NOT NULL                COMMENT '寄件用户(biz_client)',
+                          sender_id           BIGINT          NOT NULL                COMMENT '寄件用户',
                           sender_prov         VARCHAR(64)     NOT NULL                COMMENT '寄件省',
                           sender_city         VARCHAR(64)     NOT NULL                COMMENT '寄件市',
                           sender_dist         VARCHAR(64)     NOT NULL                COMMENT '寄件区县',
                           sender_addr_detail  VARCHAR(255)    NOT NULL                COMMENT '寄件详细地址',
 
-                          receiver_id         BIGINT UNSIGNED DEFAULT NULL            COMMENT '收件用户ID，可为空',
+                          receiver_id         BIGINT          DEFAULT NULL            COMMENT '收件用户ID',
                           receiver_name       VARCHAR(64)     NOT NULL                COMMENT '收件人姓名',
                           receiver_tel        VARCHAR(20)     NOT NULL                COMMENT '收件人手机号',
                           receiver_prov       VARCHAR(64)     NOT NULL                COMMENT '收件省',
@@ -143,14 +123,13 @@ CREATE TABLE biz_pack (
 
                           PRIMARY KEY (pack_id),
                           UNIQUE KEY uk_pickup_code (pickup_code),
-                          INDEX idx_pack_client (sender_id),
+                          INDEX idx_pack_sender (sender_id),
                           INDEX idx_pack_status (status),
 
-                          CONSTRAINT fk_pack_client
-                              FOREIGN KEY (sender_id) REFERENCES biz_client(client_id)
+                          CONSTRAINT fk_pack_sender
+                              FOREIGN KEY (sender_id) REFERENCES sys_user(user_id)
                                   ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='包裹表（地址文本化，不关联地址表）';
-
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='包裹表';
 
 /* ==========================================
    表：biz_pack_flow（包裹流转/到站记录）
@@ -182,7 +161,6 @@ CREATE TABLE biz_pack_flow (
                                        ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='包裹流转记录';
 
-
 /* ===================================
    表：biz_pack_verify（包裹审核）
 =================================== */
@@ -213,7 +191,6 @@ CREATE TABLE biz_pack_verify (
                                      FOREIGN KEY (admin_user_id) REFERENCES sys_user(user_id)
                                          ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='包裹审核记录';
-
 
 /* =======================================
    表：biz_pack_rejection（拒收/退件记录）

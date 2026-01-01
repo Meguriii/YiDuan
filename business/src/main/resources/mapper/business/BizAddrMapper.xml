@@ -6,7 +6,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <resultMap type="BizAddr" id="BizAddrResult">
         <result property="addrId"    column="addr_id"    />
-        <result property="clientId"    column="client_id"    />
+        <result property="userId"    column="user_id"    />
         <result property="addrName"    column="addr_name"    />
         <result property="addrTel"    column="addr_tel"    />
         <result property="addrProv"    column="addr_prov"    />
@@ -19,13 +19,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectBizAddrVo">
-        select addr_id, client_id, addr_name, addr_tel, addr_prov, addr_city, addr_dist, addr_detail, is_default, created_at, updated_at from biz_addr
+        select addr_id, user_id, addr_name, addr_tel, addr_prov, addr_city, addr_dist, addr_detail, is_default, created_at, updated_at from biz_addr
     </sql>
 
     <select id="selectBizAddrList" parameterType="BizAddr" resultMap="BizAddrResult">
         <include refid="selectBizAddrVo"/>
         <where>  
-            <if test="clientId != null  and clientId != ''"> and client_id = #{clientId}</if>
+            <if test="userId != null"> and user_id = #{userId}</if>
             <if test="addrName != null  and addrName != ''"> and addr_name like concat('%', #{addrName}, '%')</if>
             <if test="addrTel != null  and addrTel != ''"> and addr_tel = #{addrTel}</if>
             <if test="addrProv != null  and addrProv != ''"> and addr_prov = #{addrProv}</if>
@@ -46,7 +46,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <insert id="insertBizAddr" parameterType="BizAddr" useGeneratedKeys="true" keyProperty="addrId">
         insert into biz_addr
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="clientId != null and clientId != ''">client_id,</if>
+            <if test="userId != null">user_id,</if>
             <if test="addrName != null and addrName != ''">addr_name,</if>
             <if test="addrTel != null and addrTel != ''">addr_tel,</if>
             <if test="addrProv != null and addrProv != ''">addr_prov,</if>
@@ -58,7 +58,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updatedAt != null">updated_at,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="clientId != null and clientId != ''">#{clientId},</if>
+            <if test="userId != null">#{userId},</if>
             <if test="addrName != null and addrName != ''">#{addrName},</if>
             <if test="addrTel != null and addrTel != ''">#{addrTel},</if>
             <if test="addrProv != null and addrProv != ''">#{addrProv},</if>
@@ -74,7 +74,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <update id="updateBizAddr" parameterType="BizAddr">
         update biz_addr
         <trim prefix="SET" suffixOverrides=",">
-            <if test="clientId != null and clientId != ''">client_id = #{clientId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
             <if test="addrName != null and addrName != ''">addr_name = #{addrName},</if>
             <if test="addrTel != null and addrTel != ''">addr_tel = #{addrTel},</if>
             <if test="addrProv != null and addrProv != ''">addr_prov = #{addrProv},</if>
@@ -99,10 +99,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </foreach>
     </delete>
 
-    <update id="updateOthersToOne" parameterType="String">
+    <update id="updateOthersToOne" parameterType="map">
         UPDATE biz_addr
         SET is_default = 1
-        WHERE client_id = #{clientId}
+        WHERE user_id = #{userId}
         AND addr_id != #{addrId}
     </update>
 </mapper>
