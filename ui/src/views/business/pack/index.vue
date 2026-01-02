@@ -1008,7 +1008,7 @@ export default {
       isSuperAdmin()
       {
         const userRoles = this.$store.state.user.roles;
-        console.log('当前用户角色:', userRoles);
+        // console.log('当前用户角色:', userRoles);
         return userRoles && Array.isArray(userRoles) && userRoles.includes('admin');
       },
       canEditPack(row)

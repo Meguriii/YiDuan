@@ -112,6 +112,19 @@ export function pickup(pickupCode) {
   })
 }
 
+// 根据收件人ID和状态查询包裹
+export function listPackByReceiverIdAndStatus(receiverId, status) {
+  const params = {
+    receiverId: receiverId,
+    status: status
+  };
+  return request({
+    url: '/business/pack/byReceiverIdAndStatus',
+    method: 'get',
+    params: params
+  })
+}
+
 // 超级管理员修改包裹状态
 export function updatePackStatus(packId, data) {
   return request({
@@ -125,6 +138,14 @@ export function updatePackStatus(packId, data) {
 export function getMyPacks(userId) {
   return request({
     url: '/business/pack/myPacks/' + userId,
+    method: 'get'
+  })
+}
+
+// 查询用户相关包裹(包含寄件人信息)
+export function getMyPacksWithSender(userId) {
+  return request({
+    url: '/business/pack/myPacksWithSender/' + userId,
     method: 'get'
   })
 }

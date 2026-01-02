@@ -73,6 +73,12 @@
           </div>
           <div class="update-log-container">
             <el-collapse accordion>
+              <el-collapse-item title="v0.9.3 - 2026-1-2">
+                <ol>
+                  <li>实现业务用户寄件和收件功能</li>
+                  <li>修复很多已知bug</li>
+                </ol>
+              </el-collapse-item>
             <el-collapse-item title="v0.9.2 - 2026-1-2">
               <ol>
                 <li>合并系统用户和业务用户表</li>
@@ -82,13 +88,13 @@
                 <li>修复很多已知bug</li>
               </ol>
             </el-collapse-item>
-              <el-collapse-item title="v0.9.1 - 2025-12-31">
-                <ol>
-                  <li>优化管理员对包裹管理权限</li>
-                  <li>优化包裹管理界面，添加包裹详情弹窗</li>
-                  <li>重构修改包裹信息界面</li>
-                </ol>
-              </el-collapse-item>
+            <el-collapse-item title="v0.9.1 - 2025-12-31">
+              <ol>
+                <li>优化管理员对包裹管理权限</li>
+                <li>优化包裹管理界面，添加包裹详情弹窗</li>
+                <li>重构修改包裹信息界面</li>
+              </ol>
+            </el-collapse-item>
             <el-collapse-item title="v0.9.0 - 2025-12-30">
               <ol>
                 <li>重构主页UI</li>
@@ -412,7 +418,7 @@ export default {
       roleGroup: '',
       postGroup: '',
       server: {},
-      version: "0.9.2"
+      version: "0.9.3"
     }
   },
   methods: {

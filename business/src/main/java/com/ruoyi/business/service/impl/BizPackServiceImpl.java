@@ -2,6 +2,7 @@ package com.ruoyi.business.service.impl;
 
 import java.util.List;
 import java.util.Date;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.business.mapper.BizPackMapper;
@@ -40,6 +41,24 @@ public class BizPackServiceImpl implements IBizPackService
     public BizPackWithSender selectBizPackWithSenderByPackId(String packId)
     {
         return bizPackMapper.selectBizPackWithSenderByPackId(packId);
+    }
+
+    @Override
+    public List<BizPack> selectBizPackByUserId(Long userId)
+    {
+        return bizPackMapper.selectBizPackByUserId(userId);
+    }
+
+    @Override
+    public List<BizPack> selectBizPackByReceiverIdAndStatus(@Param("receiverId") Long receiverId, @Param("status") String status)
+    {
+        return bizPackMapper.selectBizPackByReceiverIdAndStatus(receiverId, status);
+    }
+
+    @Override
+    public List<BizPackWithSender> selectBizPackWithSenderByUserId(Long userId)
+    {
+        return bizPackMapper.selectBizPackWithSenderByUserId(userId);
     }
 
     /**

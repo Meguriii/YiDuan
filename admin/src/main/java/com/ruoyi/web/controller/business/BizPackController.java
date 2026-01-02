@@ -1,6 +1,9 @@
 package com.ruoyi.business.controller;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +24,7 @@ import com.ruoyi.business.domain.BizPackWithSender;
 import com.ruoyi.business.service.IBizPackService;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
-import java.util.Map;
-import java.util.HashMap;
+import com.ruoyi.common.utils.SecurityUtils;
 
 /**
  * 包裹表Controller
@@ -227,7 +229,6 @@ public class BizPackController extends BaseController
     /**
      * 取件 - 用户取件功能
      */
-    @PreAuthorize("@ss.hasPermi('business:pack:pickup')")
     @Log(title = "取件", businessType = BusinessType.UPDATE)
     @PutMapping("/pickup/{pickupCode}")
     public AjaxResult pickup(@PathVariable String pickupCode)
@@ -244,6 +245,12 @@ public class BizPackController extends BaseController
         BizPack bizPack = list.get(0);
         if (!"待取件".equals(bizPack.getStatus())) {
             return error("包裹状态不正确，无法取件");
+        }
+        
+        // 验证当前用户是否为收件人
+        Long currentUserId = SecurityUtils.getUserId();
+        if (!currentUserId.equals(bizPack.getReceiverId())) {
+            return error("您不是该包裹的收件人，无法取件");
         }
         
         bizPack.setStatus("已取件");
@@ -279,9 +286,33 @@ public class BizPackController extends BaseController
     public TableDataInfo getMyPacks(@PathVariable Long userId)
     {
         startPage();
-        BizPack query = new BizPack();
-        query.setSenderId(userId);
-        List<BizPack> list = bizPackService.selectBizPackList(query);
+        List<BizPack> list = bizPackService.selectBizPackByUserId(userId);
+        return getDataTable(list);
+    }
+    
+    /**
+     * 根据收件人ID和状态查询包裹 - 用户功能
+     */
+    @GetMapping("/byReceiverIdAndStatus")
+    public TableDataInfo getPacksByReceiverIdAndStatus(Long receiverId, String status)
+    {
+        // 验证用户只能查询自己的包裹
+        if (receiverId != null && !receiverId.equals(SecurityUtils.getUserId())) {
+            return getDataTable(new ArrayList<>());
+        }
+        startPage();
+        List<BizPack> list = bizPackService.selectBizPackByReceiverIdAndStatus(receiverId, status);
+        return getDataTable(list);
+    }
+    
+    /**
+     * 查询用户相关包裹(包含寄件人信息) - 用户功能
+     */
+    @GetMapping("/myPacksWithSender/{userId}")
+    public TableDataInfo getMyPacksWithSender(@PathVariable Long userId)
+    {
+        startPage();
+        List<BizPackWithSender> list = bizPackService.selectBizPackWithSenderByUserId(userId);
         return getDataTable(list);
     }
 }

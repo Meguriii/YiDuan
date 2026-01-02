@@ -145,6 +145,43 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
     </select>
     
+    <select id="selectBizPackByUserId" parameterType="Long" resultMap="BizPackResult">
+        <include refid="selectBizPackVo"/>
+        where sender_id = #{userId} or receiver_id = #{userId}
+    </select>
+    
+    <select id="selectBizPackWithSenderByUserId" parameterType="Long" resultMap="BizPackWithSenderResult">
+        select 
+            bp.pack_id, 
+            bp.sender_id, 
+            su.nick_name,
+            su.phonenumber,
+            bp.sender_prov, 
+            bp.sender_city, 
+            bp.sender_dist, 
+            bp.sender_addr_detail, 
+            bp.receiver_id, 
+            bp.receiver_name, 
+            bp.receiver_tel, 
+            bp.receiver_prov, 
+            bp.receiver_city, 
+            bp.receiver_dist, 
+            bp.receiver_addr_detail, 
+            bp.weight, 
+            bp.volume, 
+            bp.note, 
+            bp.is_dangerous, 
+            bp.is_fragile, 
+            bp.is_urgent, 
+            bp.status, 
+            bp.pickup_code, 
+            bp.created_at, 
+            bp.updated_at 
+        from biz_pack bp
+        left join sys_user su on bp.sender_id = su.user_id
+        where bp.sender_id = #{userId} or bp.receiver_id = #{userId}
+    </select>
+    
     <select id="selectBizPackByPackId" parameterType="String" resultMap="BizPackResult">
         <include refid="selectBizPackVo"/>
         where pack_id = #{packId}
@@ -181,7 +218,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         left join sys_user su on bp.sender_id = su.user_id
         where bp.pack_id = #{packId}
     </select>
-
+        
+    <select id="selectBizPackByReceiverIdAndStatus" parameterType="map" resultMap="BizPackResult">
+        <include refid="selectBizPackVo"/>
+        where receiver_id = #{receiverId}
+        <if test="status != null and status != ''"> and status = #{status}</if>
+    </select>
+        
     <insert id="insertBizPack" parameterType="BizPack" useGeneratedKeys="true" keyProperty="packId">
         insert into biz_pack
         <trim prefix="(" suffix=")" suffixOverrides=",">

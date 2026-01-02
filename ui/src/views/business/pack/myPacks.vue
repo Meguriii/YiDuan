@@ -36,6 +36,7 @@
       <!-- 包裹列表 -->
       <el-table v-loading="loading" :data="packList" style="margin-top: 20px">
         <el-table-column label="包裹ID" align="center" prop="packId" width="100" />
+        <el-table-column label="寄件人姓名" align="center" prop="senderName" width="100" />
         <el-table-column label="收件人" align="center" prop="receiverName" width="100" />
         <el-table-column label="收件电话" align="center" prop="receiverTel" width="120" />
         <el-table-column label="收件地址" align="center" min-width="200">
@@ -75,7 +76,7 @@
           </template>
         </el-table-column>
       </el-table>
-
+      
       <pagination
         v-show="total > 0"
         :total="total"
@@ -105,6 +106,7 @@
           <el-descriptions-item label="包裹状态">
             <el-tag :type="getStatusType(currentPack.status)">{{ currentPack.status }}</el-tag>
           </el-descriptions-item>
+          <el-descriptions-item label="寄件人姓名">{{ currentPack.senderName || '-' }}</el-descriptions-item>
           <el-descriptions-item label="寄件地址" :span="2">
             {{ currentPack.senderProv }}{{ currentPack.senderCity }}{{ currentPack.senderDist }}{{ currentPack.senderAddrDetail }}
           </el-descriptions-item>
@@ -142,7 +144,7 @@
 </template>
 
 <script>
-import { getMyPacks } from "@/api/business/pack";
+import { getMyPacksWithSender } from "@/api/business/pack";
 
 export default {
   name: "MyPacks",
@@ -174,7 +176,8 @@ export default {
   created() {
     // 获取当前用户的userId，这里需要根据实际情况获取
     // 假设从vuex或localStorage获取
-    this.userId = this.$store.getters.userId;
+    this.userId = this.$store.getters.id;
+    console.log("我是："+this.userId);
     if (this.userId) {
       this.getList();
     } else {
@@ -185,7 +188,7 @@ export default {
     /** 查询包裹列表 */
     getList() {
       this.loading = true;
-      getMyPacks(this.userId).then(response => {
+      getMyPacksWithSender(this.userId).then(response => {
         this.packList = response.rows;
         this.total = response.total;
         this.loading = false;
