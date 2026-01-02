@@ -70,6 +70,14 @@ export function changeUserStatus(userId, status) {
   })
 }
 
+// 获取所有用户列表
+export function listAllUsers() {
+  return request({
+    url: '/system/user/listAll',
+    method: 'get'
+  })
+}
+
 // 查询用户个人信息
 export function getUserProfile() {
   return request({

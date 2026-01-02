@@ -93,6 +93,10 @@ public class BizPackServiceImpl implements IBizPackService
             Long userId = SecurityUtils.getUserId();
             bizPack.setSenderId(userId);
         }
+        // 如果receiverId为0或空，则设置为null
+        if (bizPack.getReceiverId() != null && bizPack.getReceiverId() == 0) {
+            bizPack.setReceiverId(null);
+        }
         return bizPackMapper.insertBizPack(bizPack);
     }
 
@@ -105,6 +109,10 @@ public class BizPackServiceImpl implements IBizPackService
     @Override
     public int updateBizPack(BizPack bizPack)
     {
+        // 如果receiverId为0或空，则设置为null
+        if (bizPack.getReceiverId() != null && bizPack.getReceiverId() == 0) {
+            bizPack.setReceiverId(null);
+        }
         return bizPackMapper.updateBizPack(bizPack);
     }
 

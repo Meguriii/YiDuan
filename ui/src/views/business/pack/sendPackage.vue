@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span style="font-size: 18px; font-weight: bold;">寄件服务</span>
+        <span>寄件信息录入</span>
       </div>
 
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
@@ -35,6 +35,32 @@
                   :value="addr.addrId">
                 </el-option>
               </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="寄件省" prop="senderProv">
+              <el-input v-model="form.senderProv" placeholder="请输入寄件省" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="寄件市" prop="senderCity">
+              <el-input v-model="form.senderCity" placeholder="请输入寄件市" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="寄件区县" prop="senderDist">
+              <el-input v-model="form.senderDist" placeholder="请输入寄件区县" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="寄件地址" prop="senderAddrDetail">
+              <el-input v-model="form.senderAddrDetail" placeholder="请输入寄件详细地址" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -184,6 +210,25 @@ export default {
       receiverAddrSelected: null,
       // 表单校验
       rules: {
+        senderName: [
+          { required: true, message: "寄件人姓名不能为空", trigger: "blur" }
+        ],
+        senderTel: [
+          { required: true, message: "寄件人电话不能为空", trigger: "blur" },
+          { pattern: /^1[3-9]\d{9}$/, message: "请输入正确的手机号码", trigger: "blur" }
+        ],
+        senderProv: [
+          { required: true, message: "寄件省不能为空", trigger: "blur" }
+        ],
+        senderCity: [
+          { required: true, message: "寄件市不能为空", trigger: "blur" }
+        ],
+        senderDist: [
+          { required: true, message: "寄件区县不能为空", trigger: "blur" }
+        ],
+        senderAddrDetail: [
+          { required: true, message: "寄件详细地址不能为空", trigger: "blur" }
+        ],
         receiverName: [
           { required: true, message: "收件人姓名不能为空", trigger: "blur" }
         ],

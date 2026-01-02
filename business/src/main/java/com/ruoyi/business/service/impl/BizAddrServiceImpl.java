@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import com.ruoyi.business.mapper.BizAddrMapper;
 import com.ruoyi.business.domain.BizAddr;
 import com.ruoyi.business.service.IBizAddrService;
+import com.ruoyi.common.utils.SecurityUtils;
 
 /**
  * 用户地址簿Service业务层处理
@@ -52,6 +53,11 @@ public class BizAddrServiceImpl implements IBizAddrService
     @Override
     public int insertBizAddr(BizAddr bizAddr)
     {
+        // 如果前端没有传递userId,则使用当前登录用户的ID
+        if (bizAddr.getUserId() == null) {
+            Long userId = SecurityUtils.getUserId();
+            bizAddr.setUserId(userId);
+        }
         return bizAddrMapper.insertBizAddr(bizAddr);
     }
 

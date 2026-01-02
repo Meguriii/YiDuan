@@ -47,24 +47,24 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         insert into biz_addr
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="userId != null">user_id,</if>
-            <if test="addrName != null and addrName != ''">addr_name,</if>
-            <if test="addrTel != null and addrTel != ''">addr_tel,</if>
-            <if test="addrProv != null and addrProv != ''">addr_prov,</if>
-            <if test="addrCity != null and addrCity != ''">addr_city,</if>
-            <if test="addrDist != null and addrDist != ''">addr_dist,</if>
-            <if test="addrDetail != null and addrDetail != ''">addr_detail,</if>
+            <if test="addrName != null">addr_name,</if>
+            <if test="addrTel != null">addr_tel,</if>
+            <if test="addrProv != null">addr_prov,</if>
+            <if test="addrCity != null">addr_city,</if>
+            <if test="addrDist != null">addr_dist,</if>
+            <if test="addrDetail != null">addr_detail,</if>
             <if test="isDefault != null">is_default,</if>
             <if test="createdAt != null">created_at,</if>
             <if test="updatedAt != null">updated_at,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null">#{userId},</if>
-            <if test="addrName != null and addrName != ''">#{addrName},</if>
-            <if test="addrTel != null and addrTel != ''">#{addrTel},</if>
-            <if test="addrProv != null and addrProv != ''">#{addrProv},</if>
-            <if test="addrCity != null and addrCity != ''">#{addrCity},</if>
-            <if test="addrDist != null and addrDist != ''">#{addrDist},</if>
-            <if test="addrDetail != null and addrDetail != ''">#{addrDetail},</if>
+            <if test="addrName != null">#{addrName},</if>
+            <if test="addrTel != null">#{addrTel},</if>
+            <if test="addrProv != null">#{addrProv},</if>
+            <if test="addrCity != null">#{addrCity},</if>
+            <if test="addrDist != null">#{addrDist},</if>
+            <if test="addrDetail != null">#{addrDetail},</if>
             <if test="isDefault != null">#{isDefault},</if>
             <if test="createdAt != null">#{createdAt},</if>
             <if test="updatedAt != null">#{updatedAt},</if>
@@ -75,12 +75,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         update biz_addr
         <trim prefix="SET" suffixOverrides=",">
             <if test="userId != null">user_id = #{userId},</if>
-            <if test="addrName != null and addrName != ''">addr_name = #{addrName},</if>
-            <if test="addrTel != null and addrTel != ''">addr_tel = #{addrTel},</if>
-            <if test="addrProv != null and addrProv != ''">addr_prov = #{addrProv},</if>
-            <if test="addrCity != null and addrCity != ''">addr_city = #{addrCity},</if>
-            <if test="addrDist != null and addrDist != ''">addr_dist = #{addrDist},</if>
-            <if test="addrDetail != null and addrDetail != ''">addr_detail = #{addrDetail},</if>
+            <if test="addrName != null">addr_name = #{addrName},</if>
+            <if test="addrTel != null">addr_tel = #{addrTel},</if>
+            <if test="addrProv != null">addr_prov = #{addrProv},</if>
+            <if test="addrCity != null">addr_city = #{addrCity},</if>
+            <if test="addrDist != null">addr_dist = #{addrDist},</if>
+            <if test="addrDetail != null">addr_detail = #{addrDetail},</if>
             <if test="isDefault != null">is_default = #{isDefault},</if>
             <if test="createdAt != null">created_at = #{createdAt},</if>
             <if test="updatedAt != null">updated_at = #{updatedAt},</if>

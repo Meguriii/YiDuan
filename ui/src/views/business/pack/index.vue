@@ -302,8 +302,25 @@
     <!-- 添加或修改包裹表对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-row>
-          <el-col :span="24">
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="寄件用户" prop="senderId">
+              <el-select
+                v-model="form.senderId"
+                placeholder="请选择寄件用户"
+                filterable
+                @change="handleSenderUserChange"
+                style="width: 100%">
+                <el-option
+                  v-for="user in userList"
+                  :key="user.userId"
+                  :label="user.nickName || user.userName"
+                  :value="user.userId">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
             <el-form-item label="寄件地址" prop="senderAddr">
               <el-select
                 v-model="senderAddrSelected"
@@ -313,7 +330,7 @@
                 @change="handleSenderAddrChange"
                 style="width: 100%">
                 <el-option
-                  v-for="addr in addrList"
+                  v-for="addr in senderAddrList"
                   :key="addr.addrId"
                   :label="addr.addrProv + addr.addrCity + addr.addrDist + addr.addrDetail"
                   :value="addr.addrId">
@@ -346,8 +363,25 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row>
-          <el-col :span="24">
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="收件用户" prop="receiverId">
+              <el-select
+                v-model="form.receiverId"
+                placeholder="请选择收件用户"
+                filterable
+                @change="handleReceiverUserChange"
+                style="width: 100%">
+                <el-option
+                  v-for="user in userList"
+                  :key="user.userId"
+                  :label="user.nickName || user.userName"
+                  :value="user.userId">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
             <el-form-item label="收件地址" prop="receiverAddr">
               <el-select
                 v-model="receiverAddrSelected"
@@ -357,7 +391,7 @@
                 @change="handleReceiverAddrChange"
                 style="width: 100%">
                 <el-option
-                  v-for="addr in addrList"
+                  v-for="addr in receiverAddrList"
                   :key="addr.addrId"
                   :label="addr.addrProv + addr.addrCity + addr.addrDist + addr.addrDetail"
                   :value="addr.addrId">
@@ -536,6 +570,7 @@
 <script>
 import { listPack, getPack, delPack, addPack, updatePack, updatePackStatus, getPackWithSender } from "@/api/business/pack"
 import { listAddr, addAddr } from "@/api/business/addr"
+import { listAllUsers, getUser } from "@/api/system/user"
 
 export default {
   name: "Pack",
@@ -562,6 +597,12 @@ export default {
       open: false,
       // 地址列表
       addrList: [],
+      // 用户列表
+      userList: [],
+      // 寄件人地址列表
+      senderAddrList: [],
+      // 收件人地址列表
+      receiverAddrList: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -602,7 +643,7 @@ export default {
       // 表单校验
       rules: {
         senderId: [
-          {required: true, message: "寄件用户(biz_client)不能为空", trigger: "blur"}
+          {required: true, message: "寄件用户不能为空", trigger: "blur"}
         ],
         senderProv: [
           {required: true, message: "寄件省不能为空", trigger: "blur"}
@@ -675,16 +716,105 @@ export default {
   created() {
       this.getList()
       this.getAddrList()
+      this.getUserList()
     },
   methods: {
+      /** 获取用户列表 */
+      getUserList()
+      {
+        listAllUsers().then(response => {
+          this.userList = response.data
+        })
+      },
       /** 查询地址列表 */
       getAddrList()
       {
         listAddr({pageNum: 1, pageSize: 1000}).then(response => {
           this.addrList = response.rows
+          // 分别获取寄件人和收件人地址列表
+          this.updateAddrLists()
         })
-      }
-    ,
+      },
+      /** 更新地址列表 */
+      updateAddrLists() {
+        // 更新寄件人地址列表
+        if (this.form.senderId) {
+          this.senderAddrList = this.addrList.filter(addr => addr.userId === this.form.senderId)
+        } else {
+          this.senderAddrList = []
+        }
+        
+        // 更新收件人地址列表
+        if (this.form.receiverId) {
+          this.receiverAddrList = this.addrList.filter(addr => addr.userId === this.form.receiverId)
+        } else {
+          this.receiverAddrList = []
+        }
+      },
+      /** 寄件用户选择改变 */
+      handleSenderUserChange(val)
+      {
+        if (val) {
+          // 重新获取寄件人地址列表
+          this.senderAddrList = this.addrList.filter(addr => addr.userId === val)
+          // 清空已选择的地址
+          this.senderAddrSelected = null
+          this.form.senderProv = null
+          this.form.senderCity = null
+          this.form.senderDist = null
+          this.form.senderAddrDetail = null
+        } else {
+          this.senderAddrList = []
+          this.senderAddrSelected = null
+        }
+      },
+      /** 收件用户选择改变 */
+      handleReceiverUserChange(val)
+      {
+        if (val) {
+          // 重新获取收件人地址列表
+          this.receiverAddrList = this.addrList.filter(addr => addr.userId === val)
+          // 清空已选择的地址
+          this.receiverAddrSelected = null
+          this.form.receiverProv = null
+          this.form.receiverCity = null
+          this.form.receiverDist = null
+          this.form.receiverAddrDetail = null
+          this.form.receiverName = null
+          this.form.receiverTel = null
+        } else {
+          this.receiverAddrList = []
+          this.receiverAddrSelected = null
+        }
+      },
+      /** 寄件地址选择改变 */
+      handleSenderAddrChange(val)
+      {
+        if (val) {
+          const addr = this.senderAddrList.find(item => item.addrId === val)
+          if (addr) {
+            this.form.senderProv = addr.addrProv
+            this.form.senderCity = addr.addrCity
+            this.form.senderDist = addr.addrDist
+            this.form.senderAddrDetail = addr.addrDetail
+          }
+        }
+      },
+      /** 收件地址选择改变 */
+      handleReceiverAddrChange(val)
+      {
+        if (val) {
+          const addr = this.receiverAddrList.find(item => item.addrId === val)
+          if (addr) {
+            this.form.receiverProv = addr.addrProv
+            this.form.receiverCity = addr.addrCity
+            this.form.receiverDist = addr.addrDist
+            this.form.receiverAddrDetail = addr.addrDetail
+            this.form.receiverName = addr.addrName
+            this.form.receiverTel = addr.addrTel
+          }
+        }
+      },
       /** 查询包裹表列表(包含寄件人信息) */
       getPackListWithSender(queryParams)
       {
@@ -744,37 +874,9 @@ export default {
         }
         this.senderAddrSelected = null
         this.receiverAddrSelected = null
+        this.senderAddrList = []
+        this.receiverAddrList = []
         this.resetForm("form")
-      }
-    ,
-      /** 寄件地址选择改变 */
-      handleSenderAddrChange(val)
-      {
-        if (val) {
-          const addr = this.addrList.find(item => item.addrId === val)
-          if (addr) {
-            this.form.senderProv = addr.addrProv
-            this.form.senderCity = addr.addrCity
-            this.form.senderDist = addr.addrDist
-            this.form.senderAddrDetail = addr.addrDetail
-          }
-        }
-      }
-    ,
-      /** 收件地址选择改变 */
-      handleReceiverAddrChange(val)
-      {
-        if (val) {
-          const addr = this.addrList.find(item => item.addrId === val)
-          if (addr) {
-            this.form.receiverProv = addr.addrProv
-            this.form.receiverCity = addr.addrCity
-            this.form.receiverDist = addr.addrDist
-            this.form.receiverAddrDetail = addr.addrDetail
-            this.form.receiverName = addr.addrName
-            this.form.receiverTel = addr.addrTel
-          }
-        }
       }
     ,
       /** 搜索按钮操作 */
@@ -816,6 +918,8 @@ export default {
           this.form = response.data
           this.open = true
           this.title = "修改包裹表"
+          // 更新地址列表
+          this.updateAddrLists()
         })
       }
     ,
@@ -841,9 +945,10 @@ export default {
                   addrCity: this.form.senderCity,
                   addrDist: this.form.senderDist,
                   addrDetail: this.form.senderAddrDetail,
-                  addrName: '寄件地址',
-                  addrTel: '',
-                  isDefault: 0
+                  addrName: this.form.senderName || '寄件地址',
+                  addrTel: this.form.senderTel || '',
+                  isDefault: 0,
+                  userId: this.form.senderId
                 }
                 promises.push(addAddr(newSenderAddr))
               }
@@ -865,7 +970,8 @@ export default {
                   addrDetail: this.form.receiverAddrDetail,
                   addrName: this.form.receiverName || '收件地址',
                   addrTel: this.form.receiverTel || '',
-                  isDefault: 0
+                  isDefault: 0,
+                  userId: this.form.receiverId
                 }
                 promises.push(addAddr(newReceiverAddr))
               }
