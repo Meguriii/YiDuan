@@ -73,7 +73,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="收件人电话" prop="receiverTel">
-              <el-input v-model="form.receiverTel" placeholder="请输入收件人电话" />
+              <el-input v-model="form.receiverTel" placeholder="请输入收件人电话" @blur="queryReceiverIdByTel" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -176,6 +176,7 @@
 <script>
 import { addPack } from '@/api/business/pack'
 import { listAddr } from '@/api/business/addr'
+import { getUserByPhonenumber } from '@/api/system/user'
 
 export default {
   name: "SendPackage",
@@ -189,6 +190,7 @@ export default {
         senderCity: '',
         senderDist: '',
         senderAddrDetail: '',
+        receiverId: null, // 收件用户ID
         receiverName: '',
         receiverTel: '',
         receiverProv: '',
@@ -327,6 +329,7 @@ export default {
             senderCity: this.form.senderCity || '',
             senderDist: this.form.senderDist || '',
             senderAddrDetail: this.form.senderAddrDetail || '',
+            receiverId: this.form.receiverId || null, // 设置收件人ID，如果未找到对应用户则为null
             receiverName: this.form.receiverName,
             receiverTel: this.form.receiverTel,
             receiverProv: this.form.receiverProv,
@@ -350,6 +353,33 @@ export default {
           });
         }
       });
+    },
+
+    /** 根据收件人电话查询用户ID */
+    queryReceiverIdByTel() {
+      if (this.form.receiverTel) {
+        getUserByPhonenumber(this.form.receiverTel).then(response => {
+          if (response.code === 200) {
+            // 找到用户，设置receiverId
+            this.form.receiverId = response.data.userId;
+            // 如果收件人姓名为空，使用用户昵称
+            if (!this.form.receiverName) {
+              this.form.receiverName = response.data.nickName || response.data.userName;
+            }
+            this.$message.success('已找到对应用户');
+          } else {
+            // 未找到用户，设置receiverId为null
+            this.form.receiverId = null;
+            this.$message.info('未找到对应用户，将作为普通收件人处理');
+          }
+        }).catch(error => {
+          console.error('查询用户失败:', error);
+          this.form.receiverId = null;
+          this.$message.error('查询用户失败');
+        });
+      } else {
+        this.form.receiverId = null;
+      }
     },
 
     /** 重置表单 */

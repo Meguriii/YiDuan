@@ -12,6 +12,14 @@ import com.ruoyi.common.core.domain.entity.SysUser;
 public interface SysUserMapper
 {
     /**
+     * 根据手机号码查询用户信息
+     * 
+     * @param phonenumber 手机号码
+     * @return 用户信息
+     */
+    public SysUser selectUserByPhonenumber(String phonenumber);
+
+    /**
      * 根据条件分页查询用户列表
      * 
      * @param sysUser 用户信息

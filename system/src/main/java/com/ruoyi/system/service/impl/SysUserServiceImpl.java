@@ -251,6 +251,18 @@ public class SysUserServiceImpl implements ISysUserService
     }
 
     /**
+     * 根据手机号码查询用户信息
+     * 
+     * @param phonenumber 手机号码
+     * @return 用户信息
+     */
+    @Override
+    public SysUser selectUserByPhonenumber(String phonenumber)
+    {
+        return userMapper.selectUserByPhonenumber(phonenumber);
+    }
+
+    /**
      * 新增保存用户信息
      * 
      * @param user 用户信息

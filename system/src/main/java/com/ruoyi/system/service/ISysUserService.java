@@ -105,6 +105,14 @@ public interface ISysUserService
     public void checkUserDataScope(Long userId);
 
     /**
+     * 根据手机号码查询用户信息
+     * 
+     * @param phonenumber 手机号码
+     * @return 用户信息
+     */
+    public SysUser selectUserByPhonenumber(String phonenumber);
+
+    /**
      * 新增用户信息
      * 
      * @param user 用户信息

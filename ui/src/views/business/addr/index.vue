@@ -128,7 +128,7 @@
     <el-table v-loading="loading" :data="addrList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="地址ID" align="center" prop="addrId" />
-      <el-table-column label="所属用户" align="center" prop="userId" />
+      <el-table-column v-if="showUserIdColumn" label="所属用户" align="center" prop="userId" />
       <el-table-column label="姓名" align="center" prop="addrName" />
       <el-table-column label="电话" align="center" prop="addrTel" />
       <el-table-column label="省" align="center" prop="addrProv" />
@@ -224,7 +224,7 @@
 </template>
 
 <script>
-import { listAddr, getAddr, delAddr, addAddr, updateAddr } from "@/api/business/addr"
+import {addAddr, delAddr, getAddr, listAddr, updateAddr} from "@/api/business/addr"
 
 export default {
   name: "Addr",
@@ -267,9 +267,6 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        userId: [
-          { required: true, message: "所属用户不能为空", trigger: "blur" }
-        ],
         addrName: [
           { required: true, message: "姓名不能为空", trigger: "blur" }
         ],
@@ -297,21 +294,43 @@ export default {
         updatedAt: [
           { required: true, message: "更新时间不能为空", trigger: "blur" }
         ]
-      }
+      },
+      // 是否显示用户ID列
+      showUserIdColumn: false
     }
   },
   created() {
     this.getList()
+    this.checkPermissions()
   },
   methods: {
     /** 查询用户地址簿列表 */
     getList() {
+      // 检查是否为管理员，如果不是管理员，强制设置userId为当前用户ID
+      const userRoles = this.$store.state.user.roles;
+      console.log('this.$store.state.user:', this.$store.state.user);
+      const isAdmin = userRoles && (userRoles.includes('admin') || userRoles.includes('station_admin'));
+
+      if (!isAdmin) {// 确保用户信息存在
+        if (this.$store.state.user.id) {
+          this.queryParams.userId = this.$store.state.user.id;
+          console .log('this.queryParams.userId:',this.queryParams.userId);
+        }
+      }
+
       this.loading = true
       listAddr(this.queryParams).then(response => {
         this.addrList = response.rows
         this.total = response.total
         this.loading = false
       })
+    },
+    // 检查用户权限
+    checkPermissions() {
+      const userRoles = this.$store.state.user.roles;
+      // 检查是否为管理员（roleKey为admin或station_admin）
+      // 只有管理员才能看到用户ID列
+      this.showUserIdColumn = userRoles && (userRoles.includes('admin') || userRoles.includes('station_admin'));
     },
     // 取消按钮
     cancel() {
@@ -322,7 +341,7 @@ export default {
     reset() {
       this.form = {
         addrId: null,
-        clientId: null,
+        userId: null, // 在创建时后端会自动设置为当前用户ID
         addrName: null,
         addrTel: null,
         addrProv: null,
@@ -363,33 +382,66 @@ export default {
       const addrId = row.addrId || this.ids
       getAddr(addrId).then(response => {
         this.form = response.data
+
+        // 检查用户权限，确保普通用户只能编辑自己的地址
+        const userRoles = this.$store.state.user.roles;
+        const isAdmin = userRoles && (userRoles.includes('admin') || userRoles.includes('station_admin'));
+        const currentUser = this.$store.state.user.user;
+        const currentUserId = currentUser ? currentUser.userId : null;
+
+        // 如果不是管理员，且地址不属于当前用户，则不允许编辑
+        if (!isAdmin && currentUserId && this.form.userId !== currentUserId) {
+          this.$modal.msgError("您只能编辑自己的地址信息");
+          return;
+        }
+
         this.open = true
         this.title = "修改用户地址簿"
       })
     },
     /** 提交按钮 */
     submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.addrId != null) {
-            updateAddr(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功")
-              this.open = false
-              this.getList()
-            })
-          } else {
-            addAddr(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功")
-              this.open = false
-              this.getList()
-            })
+      if (this.$refs["form"]) {
+        this.$refs["form"].validate(valid => {
+          if (valid) {
+            if (this.form.addrId != null) {
+              updateAddr(this.form).then(response => {
+                this.$modal.msgSuccess("修改成功")
+                this.open = false
+                this.getList()
+              })
+            } else {
+              // 对于新增，移除userId，让后端自动设置为当前用户ID
+              const addrData = { ...this.form };
+              delete addrData.userId; // 让后端自动设置为当前用户ID
+              addAddr(addrData).then(response => {
+                this.$modal.msgSuccess("新增成功")
+                this.open = false
+                this.getList()
+              })
+            }
           }
-        }
-      })
+        })
+      }
     },
     /** 删除按钮操作 */
     handleDelete(row) {
       const addrIds = row.addrId || this.ids
+
+      // 检查用户权限，确保普通用户只能删除自己的地址
+      if (row) {
+        const userRoles = this.$store.state.user.roles;
+        const isAdmin = userRoles && (userRoles.includes('admin') || userRoles.includes('station_admin'));
+        const currentUser = this.$store.state.user.user;
+        const currentUserId = currentUser ? currentUser.userId : null;
+
+        // 如果不是管理员，且地址不属于当前用户，则不允许删除
+        if (!isAdmin && currentUserId && row.userId !== currentUserId) {
+          this.$modal.msgError("您只能删除自己的地址信息");
+          return;
+        }
+      }
+
       this.$modal.confirm('是否确认删除用户地址簿编号为"' + addrIds + '"的数据项？').then(function() {
         return delAddr(addrIds)
       }).then(() => {
@@ -402,24 +454,6 @@ export default {
       this.download('business/addr/export', {
         ...this.queryParams
       }, `addr_${new Date().getTime()}.xlsx`)
-    },
-    // 检查是否为超级管理员
-    isSuperAdmin() {
-      // 获取当前用户角色信息
-      const userRoles = this.$store.state.user.roles;
-      // 超级管理员roleID为1
-      return userRoles.some(role => role.roleId === 1);
-    },
-    /** 修改状态按钮操作 */
-    handleUpdateStatus(row) {
-      const addrIds = row.addrId || this.ids;
-      this.$modal.confirm('请确认是否修改地址簿编号为"' + addrIds + '"的状态？').then(function() {
-        // 这里需要后端提供修改状态的API
-        // updateAddrStatus(addrIds).then(response => {
-        //   this.$modal.msgSuccess("状态修改成功");
-        //   this.getList();
-        // });
-      }).catch(() => {});
     }
   }
 }

@@ -86,6 +86,15 @@ export function getUserProfile() {
   })
 }
 
+// 根据手机号码查询用户
+export function getUserByPhonenumber(phonenumber) {
+  return request({
+    url: '/system/user/queryByPhonenumber',
+    method: 'get',
+    params: { phonenumber: phonenumber }
+  })
+}
+
 // 修改用户个人信息
 export function updateUserProfile(data) {
   return request({
