@@ -50,12 +50,14 @@
         />
       </el-form-item>
       <el-form-item label="是否默认地址" prop="isDefault">
-        <el-input
-          v-model="queryParams.isDefault"
-          placeholder="请输入是否默认地址"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.isDefault" placeholder="请选择是否默认地址" clearable>
+          <el-option
+            v-for="dict in dict.type.biz_yes_no"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="创建时间" prop="createdAt">
         <el-date-picker clearable
@@ -135,7 +137,11 @@
       <el-table-column label="市" align="center" prop="addrCity" />
       <el-table-column label="区县" align="center" prop="addrDist" />
       <el-table-column label="详细地址" align="center" prop="addrDetail" />
-      <el-table-column label="是否默认地址" align="center" prop="isDefault" />
+      <el-table-column label="是否默认地址" align="center" prop="isDefault">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.biz_yes_no" :value="scope.row.isDefault"/>
+        </template>
+      </el-table-column>
       <el-table-column label="创建时间" align="center" prop="createdAt" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createdAt, '{y}-{m}-{d}') }}</span>
@@ -196,24 +202,24 @@
           <el-input v-model="form.addrDetail" placeholder="请输入详细地址" />
         </el-form-item>
         <el-form-item label="是否默认地址" prop="isDefault">
-          <el-input v-model="form.isDefault" placeholder="请输入是否默认地址" />
+          <el-switch v-model="form.isDefault" :active-value='1' :inactive-value='0'></el-switch>
         </el-form-item>
-        <el-form-item label="创建时间" prop="createdAt">
-          <el-date-picker clearable
-            v-model="form.createdAt"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="请选择创建时间">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="更新时间" prop="updatedAt">
-          <el-date-picker clearable
-            v-model="form.updatedAt"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="请选择更新时间">
-          </el-date-picker>
-        </el-form-item>
+<!--        <el-form-item label="创建时间" prop="createdAt">-->
+<!--          <el-date-picker clearable-->
+<!--            v-model="form.createdAt"-->
+<!--            type="date"-->
+<!--            value-format="yyyy-MM-dd"-->
+<!--            placeholder="请选择创建时间">-->
+<!--          </el-date-picker>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="更新时间" prop="updatedAt">-->
+<!--          <el-date-picker clearable-->
+<!--            v-model="form.updatedAt"-->
+<!--            type="date"-->
+<!--            value-format="yyyy-MM-dd"-->
+<!--            placeholder="请选择更新时间">-->
+<!--          </el-date-picker>-->
+<!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -228,6 +234,7 @@ import {addAddr, delAddr, getAddr, listAddr, updateAddr} from "@/api/business/ad
 
 export default {
   name: "Addr",
+  dicts: ['biz_yes_no'],
   data() {
     return {
       // 遮罩层

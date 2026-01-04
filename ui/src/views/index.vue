@@ -73,6 +73,12 @@
           </div>
           <div class="update-log-container">
             <el-collapse accordion>
+              <el-collapse-item title="v1.0.0 - 2026-1-4">
+                <ol>
+                  <li>所有功能测试通过</li>
+                  <li>正式版上线</li>
+                </ol>
+              </el-collapse-item>
               <el-collapse-item title="v0.9.3 - 2026-1-2">
                 <ol>
                   <li>实现业务用户寄件和收件功能</li>
@@ -418,7 +424,7 @@ export default {
       roleGroup: '',
       postGroup: '',
       server: {},
-      version: "0.9.3"
+      version: "1.0.0"
     }
   },
   methods: {
